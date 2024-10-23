@@ -3,14 +3,35 @@ import { Layout, Menu, Input, Button } from 'antd'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import 'antd/dist/reset.css'
 import 'leaflet/dist/leaflet.css'
-import { Route } from './types/routes'
-import { GET_ROUTES } from './api/bus_api'
+import { Route, Stop, VehicleStatus } from './types/type'
+import { GET_ROUTES, GET_STOPS, GET_VEHICLE_STATUS } from './api/bus_api'
+import L from 'leaflet'
 
 const { Sider, Content } = Layout
 
+const DefaultIcon = L.icon({
+    iconUrl:
+        'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl:
+        'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+    iconSize: [15, 25], // Reduced size of the icon
+    iconAnchor: [7, 25], // Adjusted to match the reduced icon size
+    popupAnchor: [1, -20], // Adjusted for better popup alignment
+    shadowSize: [25, 25], // Reduced shadow size to match the icon
+})
+
+const BusIcon = L.icon({
+    iconUrl: 'public/bus.png', // Replace with the actual path to your bus icon image
+    iconSize: [40, 40], // Adjust the size of the icon as needed
+    iconAnchor: [15, 30], // Adjust anchor to align the icon properly on the map
+    popupAnchor: [1, -30], // Adjust popup location relative to the icon
+})
+
 function App() {
-    const [pickRoute, setPickRoute] = useState<Route>()
+    const [pickRoute, setPickRoute] = useState<Route[]>([])
     const [routes, setRoutes] = useState<{ [key: string]: Route[] }>({})
+    const [stops, setStops] = useState<Stop[]>([])
+    const [vehicles, setVehicles] = useState<VehicleStatus[]>([])
 
     useEffect(() => {
         GET_ROUTES().then((data) => {
@@ -26,8 +47,18 @@ function App() {
         })
     }, [])
 
-    console.log(pickRoute)
-
+    useEffect(() => {
+        const patternIDs = pickRoute.map((route) => route.patternID).join(',')
+        if (patternIDs) {
+            GET_STOPS(patternIDs).then((data) => {
+                setStops(data)
+            })
+            GET_VEHICLE_STATUS(patternIDs).then((data) => {
+                setVehicles(data)
+            })
+        }
+    }, [pickRoute])
+    console.log(vehicles)
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Sider
@@ -64,12 +95,8 @@ function App() {
                         label: route[0].routeName,
                     }))}
                     onSelect={({ key }) => {
-                        // const route = routes.find(
-                        //     (route) => route.patternID === parseInt(key)
-                        // )
-                        // if (route) {
-                        //     setPickRoute(route)
-                        // }
+                        const route = routes[key]
+                        setPickRoute(route)
                     }}
                 ></Menu>
             </Sider>
@@ -77,15 +104,37 @@ function App() {
             <Layout>
                 <Content style={{ padding: '24px', height: '100vh' }}>
                     <MapContainer
-                        center={[51.505, -0.09]}
+                        center={[42.32501, -82.93877]}
                         zoom={13}
-                        scrollWheelZoom={false}
+                        scrollWheelZoom={true}
                         style={{ height: '100%', width: '100%' }}
                     >
                         <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
                         />
+                        {stops.map((stop) => (
+                            <Marker
+                                key={stop.stopID}
+                                position={[stop.latitude, stop.longitude]}
+                                icon={DefaultIcon}
+                            >
+                                <Popup>
+                                    {stop.stopName} <br /> {stop.stopCode}
+                                </Popup>
+                            </Marker>
+                        ))}
+                        {vehicles.map((vehicle) => (
+                            <Marker
+                                key={vehicle.vehicleId}
+                                position={[vehicle.lat, vehicle.lng]}
+                                icon={BusIcon}
+                            >
+                                <Popup>
+                                    {vehicle.name} <br /> {vehicle.headsignText}
+                                </Popup>
+                            </Marker>
+                        ))}
                         <Marker position={[51.505, -0.09]}>
                             <Popup>
                                 A pretty CSS3 popup. <br /> Easily customizable.
