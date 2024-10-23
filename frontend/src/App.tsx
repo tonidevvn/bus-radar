@@ -21,7 +21,7 @@ const DefaultIcon = L.icon({
 })
 
 const BusIcon = L.icon({
-    iconUrl: 'public/bus.png', // Replace with the actual path to your bus icon image
+    iconUrl: '/bus.png', // Replace with the actual path to your bus icon image
     iconSize: [40, 40], // Adjust the size of the icon as needed
     iconAnchor: [15, 30], // Adjust anchor to align the icon properly on the map
     popupAnchor: [1, -30], // Adjust popup location relative to the icon
@@ -49,16 +49,30 @@ function App() {
 
     useEffect(() => {
         const patternIDs = pickRoute.map((route) => route.patternID).join(',')
+
         if (patternIDs) {
-            GET_STOPS(patternIDs).then((data) => {
-                setStops(data)
-            })
-            GET_VEHICLE_STATUS(patternIDs).then((data) => {
-                setVehicles(data)
-            })
+            // Function to fetch stops and vehicle status
+            const fetchData = () => {
+                GET_STOPS(patternIDs).then((data) => {
+                    setStops(data)
+                })
+
+                GET_VEHICLE_STATUS(patternIDs).then((data) => {
+                    setVehicles(data)
+                })
+            }
+
+            // Initial fetch before setting up the interval
+            fetchData()
+
+            // Set up interval to fetch data every 3 seconds
+            const intervalId = setInterval(fetchData, 3000)
+
+            // Clear the interval when component unmounts or when pickRoute changes
+            return () => clearInterval(intervalId)
         }
     }, [pickRoute])
-    console.log(vehicles)
+
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Sider
