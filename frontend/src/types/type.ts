@@ -48,4 +48,32 @@ type VehicleStatus = {
   bypassDailyTripId: number | null
 }
 
-export type { Route, Stop, VehicleStatus }
+type StopSchedule = {
+  stopCode: string;
+  failed: boolean | null;
+  reqTime: Date;
+  stopName: string | null;
+  grpByPtrn: GroupByPattern[];
+};
+
+type GroupByPattern = {
+  directId: number;
+  directName: string | null;
+  patternId: number;
+  routeNum: number;
+  routeName: string | null;
+  routeCode: string;
+  patternName: string | null;
+  predictions: Prediction[];
+  ptrnStart: Date;
+};
+
+type Prediction = {
+  predictTime: Date;
+  scheduleTime: Date;
+  predictionType: string;
+  seqNo: number;
+};
+
+
+export type { Route, Stop, VehicleStatus, StopSchedule }

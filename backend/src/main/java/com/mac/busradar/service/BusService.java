@@ -2,6 +2,7 @@ package com.mac.busradar.service;
 
 import com.mac.busradar.dto.RouteDTO;
 import com.mac.busradar.dto.StopDTO;
+import com.mac.busradar.dto.StopScheduleDTO;
 import com.mac.busradar.dto.VehicleStatusDTO;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -47,5 +48,15 @@ public class BusService {
                         .build())
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<VehicleStatusDTO>>() {});
+    }
+
+    public Mono<StopScheduleDTO> getPredictionData(String stopId) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/PredictionData")
+                        .queryParam("stopId", stopId)
+                        .build())
+                .retrieve()
+                .bodyToMono(StopScheduleDTO.class);
     }
 }

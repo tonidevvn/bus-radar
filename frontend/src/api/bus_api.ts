@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios"
-import { Route, Stop, VehicleStatus } from "../types/type";
+import { Route, Stop, StopSchedule, VehicleStatus } from "../types/type";
 
 const backend = "http://localhost:8080";
 
@@ -46,8 +46,23 @@ const GET_VEHICLE_STATUS = async (patternIds: string): Promise<VehicleStatus[]> 
   }
 }
 
+const GET_PREDICTIONS = async (stopId: number): Promise<StopSchedule> => {
+  try {
+    const response: AxiosResponse<StopSchedule> = await instance.get(`/api/predictionData`, {
+      params: {
+        stopId
+      }
+    });
+    return response.data
+  } catch (error) {
+    console.error("Error fetching predictions: ", error);
+    throw error;
+  }
+}
+
 export {
   GET_ROUTES,
   GET_STOPS,
-  GET_VEHICLE_STATUS
+  GET_VEHICLE_STATUS,
+  GET_PREDICTIONS
 }
