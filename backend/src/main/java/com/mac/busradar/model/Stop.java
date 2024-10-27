@@ -1,12 +1,17 @@
-package com.mac.busradar.dto;
+package com.mac.busradar.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Data
+@Document(collection = "stop")
+@Getter
+@Setter
 @AllArgsConstructor
-public class StopDTO {
-    public String id;
+@NoArgsConstructor
+public class Stop {
+    @Id
+    private String id;
     public int stopID;
     public int stopNumber;
     public int seq;

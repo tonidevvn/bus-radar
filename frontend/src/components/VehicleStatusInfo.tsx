@@ -1,72 +1,112 @@
-import { Card, Descriptions, Tag, Image } from 'antd'
+import { Card, Tag, Space, Typography } from 'antd'
 import { VehicleStatus } from '../types/type'
+import { busIcon } from '../constants/bus'
+import dayjs from 'dayjs'
+
+const { Text } = Typography
 
 const VehicleStatusInfo = ({ vehicle }: { vehicle: VehicleStatus | null }) => {
     if (!vehicle) return null
 
-    const {
-        patternId,
-        name,
-        vehicleCapacityIndicator,
-        isLight,
-        isMedium,
-        isFull,
-        headsignText,
-        vehicleId,
-        lastUpdate,
-        lat,
-        lng,
-        velocity,
-        bearing,
-        vehicleStateId,
-        bypassDailyTripId,
-    } = vehicle
     const getCapacityTag = () => {
-        if (isFull) return <Tag color='red'>Full</Tag>
-        if (isMedium) return <Tag color='orange'>Medium</Tag>
-        if (isLight) return <Tag color='green'>Light</Tag>
-        return <Tag color='gray'>Unknown</Tag>
+        switch (true) {
+            case vehicle.isFull:
+                return (
+                    <Tag color='red'>
+                        <Space>
+                            <img
+                                src={busIcon.full}
+                                alt='Full Capacity'
+                                style={{ width: 100 }}
+                            />
+                            <Text strong>Full</Text>
+                        </Space>
+                    </Tag>
+                )
+            case vehicle.isMedium:
+                return (
+                    <Tag color='orange'>
+                        <Space>
+                            <img
+                                src={busIcon.medium}
+                                alt='Medium Capacity'
+                                style={{ width: 100 }}
+                            />
+                            <Text strong>Medium</Text>
+                        </Space>
+                    </Tag>
+                )
+            case vehicle.isLight:
+                return (
+                    <Tag color='green'>
+                        <Space>
+                            <img
+                                src={busIcon.light}
+                                alt='Light Capacity'
+                                style={{ width: 100 }}
+                            />
+                            <Text strong>Light</Text>
+                        </Space>
+                    </Tag>
+                )
+            default:
+                return (
+                    <Tag color='gray'>
+                        <Space>
+                            <img
+                                src={busIcon.unavailable}
+                                alt='Unavailable Capacity'
+                                style={{ width: 100 }}
+                            />
+                            <Text strong>Unavailable</Text>
+                        </Space>
+                    </Tag>
+                )
+        }
     }
+
+    const vehicleDetails = [
+        { label: 'Capacity', value: getCapacityTag() },
+        {
+            label: 'Vehicle Capacity Indicator',
+            value: vehicle.vehicleCapacityIndicator,
+        },
+        { label: 'Velocity', value: `${vehicle.velocity} km/h` },
+        { label: 'Bearing', value: `${vehicle.bearing}°` },
+        {
+            label: 'Last Update',
+            value: dayjs(vehicle.lastUpdate).format('YYYY-MM-DD HH:mm:ss'),
+        },
+    ]
 
     return (
         <Card
-            title={`Vehicle Status: ${name}`}
-            bordered={true}
-            style={{ width: '100%' }}
+            title={
+                <Text strong style={{ fontSize: '18px' }}>
+                    {`${vehicle.name} - ${vehicle.headsignText}`}
+                </Text>
+            }
+            bordered={false}
+            bodyStyle={{ padding: '16px' }}
+            style={{ marginBottom: '16px', borderRadius: '8px' }}
         >
-            <Descriptions bordered column={1}>
-                <Descriptions.Item label='Pattern ID'>
-                    {patternId}
-                </Descriptions.Item>
-                <Descriptions.Item label='Vehicle ID'>
-                    {vehicleId}
-                </Descriptions.Item>
-                <Descriptions.Item label='Headsign Text'>
-                    {headsignText}
-                </Descriptions.Item>
-                <Descriptions.Item label='Capacity'>
-                    {getCapacityTag()}
-                </Descriptions.Item>
-                <Descriptions.Item label='Vehicle Capacity Indicator'>
-                    {vehicleCapacityIndicator}
-                </Descriptions.Item>
-                <Descriptions.Item label='Location'>{`Lat: ${lat}, Lng: ${lng}`}</Descriptions.Item>
-                <Descriptions.Item label='Velocity'>
-                    {velocity} km/h
-                </Descriptions.Item>
-                <Descriptions.Item label='Bearing'>
-                    {bearing}°
-                </Descriptions.Item>
-                <Descriptions.Item label='Last Update'>
-                    {lastUpdate}
-                </Descriptions.Item>
-                <Descriptions.Item label='Vehicle State ID'>
-                    {vehicleStateId}
-                </Descriptions.Item>
-                <Descriptions.Item label='Bypass Daily Trip ID'>
-                    {bypassDailyTripId}
-                </Descriptions.Item>
-            </Descriptions>
+            <Space direction='vertical' style={{ width: '100%' }}>
+                {vehicleDetails.map(({ label, value }) => (
+                    <div
+                        key={label}
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            marginBottom: '8px',
+                        }}
+                    >
+                        <Text type='secondary' strong>
+                            {label}:
+                        </Text>
+                        <Text>{value}</Text>
+                    </div>
+                ))}
+            </Space>
         </Card>
     )
 }

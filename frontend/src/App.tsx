@@ -1,21 +1,16 @@
 import { useEffect, useState } from 'react'
-import { Layout, Menu, Input, Button, Divider } from 'antd'
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
+import { Layout } from 'antd'
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import 'antd/dist/reset.css'
 import 'leaflet/dist/leaflet.css'
 import { Route, Stop, VehicleStatus } from './types/type'
-import {
-    GET_PREDICTIONS,
-    GET_ROUTES,
-    GET_STOPS,
-    GET_VEHICLE_STATUS,
-} from './api/bus_api'
+import { GET_ROUTES, GET_STOPS, GET_VEHICLE_STATUS } from './api/bus_api'
 import L from 'leaflet'
 import StopInfo from './components/StopInfo'
 import VehicleStatusInfo from './components/VehicleStatusInfo'
-import StopScheduleInfo from './components/StopScheduleInfo'
+import LeftMenu from './components/Menu'
 
-const { Sider, Content } = Layout
+const { Content } = Layout
 
 const DefaultIcon = L.icon({
     iconUrl: '/circle.png',
@@ -47,12 +42,10 @@ const HighlightIcon = L.icon({
 
 function App() {
     const [pickRoute, setPickRoute] = useState<Route[]>([])
-    const [pickVehicle, setPickVehicle] = useState<VehicleStatus | null>(null)
     const [pickStop, setPickStop] = useState<Stop | null>(null)
     const [routes, setRoutes] = useState<{ [key: string]: Route[] }>({})
     const [stops, setStops] = useState<Stop[]>([])
     const [vehicles, setVehicles] = useState<VehicleStatus[]>([])
-    const [searchRoute, setSearchRoute] = useState('')
     const [currentLocation, setCurrentLocation] = useState<
         [number, number] | null
     >(null)
@@ -90,10 +83,10 @@ function App() {
             fetchData()
 
             // Set up interval to fetch data every 3 seconds
-            const intervalId = setInterval(fetchData, 3000)
+            // const intervalId = setInterval(fetchData, 3000)
 
-            // Clear the interval when component unmounts or when pickRoute changes
-            return () => clearInterval(intervalId)
+            // // Clear the interval when component unmounts or when pickRoute changes
+            // return () => clearInterval(intervalId)
         }
     }, [pickRoute])
 
@@ -108,65 +101,9 @@ function App() {
         }
     }, [])
 
-    useEffect(() => {
-        if (pickStop) {
-            if (pickStop.stopID) {
-                GET_PREDICTIONS(pickStop.stopID).then((data) => {
-                    console.log(data)
-                })
-            }
-        }
-    }, [pickStop])
-
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <Sider
-                width={250}
-                style={{
-                    background: '#fff',
-                    height: '100vh',
-                    overflowY: 'auto',
-                }}
-            >
-                <div style={{ padding: '16px' }}>
-                    <Input
-                        placeholder='Enter address or stop'
-                        style={{ marginBottom: '8px' }}
-                    />
-                    <Input
-                        placeholder='Enter route'
-                        style={{ marginBottom: '8px' }}
-                        onChange={(e) => setSearchRoute(e.target.value)}
-                    />
-                    <Button type='primary' style={{ width: '100%' }}>
-                        Submit
-                    </Button>
-                </div>
-                <Menu
-                    mode='inline'
-                    defaultSelectedKeys={['1']}
-                    style={{
-                        height: 'calc(100vh - 120px)',
-                        overflowY: 'auto',
-                        borderRight: 0,
-                    }}
-                    items={Object.entries(routes)
-                        .filter(([, route]) => {
-                            if (!searchRoute) return true
-                            return route[0].routeName
-                                .toLowerCase()
-                                .includes(searchRoute.toLowerCase())
-                        })
-                        .map(([routeID, route]) => ({
-                            key: routeID,
-                            label: route[0].routeName,
-                        }))}
-                    onSelect={({ key }) => {
-                        const route = routes[key]
-                        setPickRoute(route)
-                    }}
-                />
-            </Sider>
+            <LeftMenu routes={routes} setPickRoute={setPickRoute} />
 
             <Layout>
                 <Content style={{ padding: '24px', height: '100vh' }}>
@@ -201,7 +138,9 @@ function App() {
                                     click: () => setPickStop(stop),
                                 }}
                             >
-                                <Popup>{stop.stopName}</Popup>
+                                <Popup>
+                                    <StopInfo stop={stop} />
+                                </Popup>
                             </Marker>
                         ))}
 
@@ -213,40 +152,14 @@ function App() {
                                 eventHandlers={{
                                     click: () => setPickVehicle(vehicle),
                                 }}
-                            ></Marker>
+                            >
+                                <Popup>
+                                    <VehicleStatusInfo vehicle={vehicle} />
+                                </Popup>
+                            </Marker>
                         ))}
                     </MapContainer>
                 </Content>
-
-                <Sider
-                    width={400}
-                    style={{
-                        background: '#f0f2f5',
-                        height: '100vh',
-                        overflowY: 'auto',
-                    }}
-                >
-                    <div
-                        style={{
-                            overflowY: 'auto',
-                            height: '50%',
-                            padding: '8px',
-                        }}
-                    >
-                        <Divider>Vehicle Status</Divider>
-                        <VehicleStatusInfo vehicle={pickVehicle} />
-                    </div>
-                    <div style={{ padding: '8px' }}>
-                        <Divider>Stop Information</Divider>
-                        <StopInfo stop={pickStop} />
-                    </div>
-                    <div style={{ padding: '8px' }}>
-                        <Divider>Stop Schedule</Divider>
-                        {pickStop && (
-                            <StopScheduleInfo stopID={pickStop.stopID} />
-                        )}
-                    </div>
-                </Sider>
             </Layout>
         </Layout>
     )
