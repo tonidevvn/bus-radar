@@ -1,16 +1,8 @@
-import axios, { AxiosResponse } from "axios"
+import { AxiosResponse } from "axios"
 import { Route, Stop, StopSchedule, VehicleStatus } from "../types/type";
+import instance from "./instance";
 
-const backend = "http://localhost:8080";
 
-// Create an Axios instance with base URL
-const instance = axios.create({
-  baseURL: backend,
-  timeout: 5000, // optional: timeout for requests
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
 
 const GET_ROUTES = async (): Promise<Route[]> => {
   try {

@@ -9,6 +9,7 @@ import L from 'leaflet'
 import StopInfo from './components/StopInfo'
 import VehicleStatusInfo from './components/VehicleStatusInfo'
 import LeftMenu from './components/Menu'
+import Weather from './components/Weather'
 
 const { Content } = Layout
 
@@ -149,15 +150,13 @@ function App() {
                                 key={vehicle.vehicleId}
                                 position={[vehicle.lat, vehicle.lng]}
                                 icon={BusIcon}
-                                eventHandlers={{
-                                    click: () => setPickVehicle(vehicle),
-                                }}
                             >
                                 <Popup>
                                     <VehicleStatusInfo vehicle={vehicle} />
                                 </Popup>
                             </Marker>
                         ))}
+                        <Weather currentLocation={currentLocation} />
                     </MapContainer>
                 </Content>
             </Layout>
