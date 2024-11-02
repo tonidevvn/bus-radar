@@ -31,4 +31,4 @@ const GET_WEATHER = async ({
 
 export {
   GET_WEATHER
-}
+};

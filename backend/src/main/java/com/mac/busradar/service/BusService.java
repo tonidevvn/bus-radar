@@ -1,15 +1,11 @@
 package com.mac.busradar.service;
 
-import com.mac.busradar.dto.RouteDTO;
-import com.mac.busradar.dto.StopDTO;
-import com.mac.busradar.dto.StopScheduleDTO;
-import com.mac.busradar.dto.VehicleStatusDTO;
+import com.mac.busradar.dto.*;
 import com.mac.busradar.model.Stop;
 import com.mac.busradar.model.Vehicle;
 import com.mac.busradar.repository.StopRepository;
 import com.mac.busradar.repository.VehicleRepository;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -41,6 +37,17 @@ public class BusService {
                 .bodyToFlux(RouteDTO.class)
                 .collectList();
 
+    }
+
+    public Mono<List<RouteBuilderDTO>> getRoutesBuilder(String patternIds) {
+        Mono<List<RouteBuilderDTO>> routesBuilderData = webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/RouteBuilder")
+                        .queryParam("patternIds", patternIds)
+                        .build())
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<RouteBuilderDTO>>() {});
+        return routesBuilderData;
     }
 
     public Mono<List<StopDTO>> getStops(String patternIds) {

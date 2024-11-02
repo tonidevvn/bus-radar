@@ -1,5 +1,5 @@
-import { AxiosResponse } from "axios"
-import { Route, Stop, StopSchedule, VehicleStatus } from "../types/type";
+import { AxiosResponse } from "axios";
+import { Route, RouteBuilder, Stop, StopSchedule, VehicleStatus } from "../types/type";
 import instance from "./instance";
 
 
@@ -7,6 +7,20 @@ import instance from "./instance";
 const GET_ROUTES = async (): Promise<Route[]> => {
   try {
     const response: AxiosResponse<Route[]> = await instance.get("/api/routes");
+    return response.data
+  } catch (error) {
+    console.error("Error fetching routes: ", error);
+    throw error;
+  }
+}
+
+const GET_ROUTES_BUILDER = async (patternIds: string): Promise<RouteBuilder[]> => {
+  try {
+    const response: AxiosResponse<RouteBuilder[]> = await instance.get("/api/routesBuilder", {
+      params: {
+        patternIds
+      }
+    });
     return response.data
   } catch (error) {
     console.error("Error fetching routes: ", error);
@@ -53,8 +67,7 @@ const GET_PREDICTIONS = async (stopId: number): Promise<StopSchedule> => {
 }
 
 export {
-  GET_ROUTES,
+  GET_PREDICTIONS, GET_ROUTES, GET_ROUTES_BUILDER,
   GET_STOPS,
-  GET_VEHICLE_STATUS,
-  GET_PREDICTIONS
-}
+  GET_VEHICLE_STATUS
+};

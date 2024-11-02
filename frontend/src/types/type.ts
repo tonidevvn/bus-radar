@@ -16,6 +16,20 @@ type Route = {
   arrivalTimes?: string
 }
 
+type RouteBuilder = {
+  detour: boolean
+  points: Point[]
+}
+type Point = {
+  patternID: number
+  pointSeqNo: number
+  stopID: number
+  stopNumber: number
+  latitude: number
+  longitude: number
+  isPublic: boolean
+}
+
 type Stop = {
   stopID: number
   stopNumber: number
@@ -114,4 +128,4 @@ type WeatherValue = {
 }
 
 
-export type { Route, Stop, VehicleStatus, StopSchedule, Timeline }
+export type { Route, RouteBuilder, Stop, StopSchedule, Timeline, VehicleStatus }

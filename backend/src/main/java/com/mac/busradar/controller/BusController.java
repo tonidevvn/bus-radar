@@ -1,9 +1,6 @@
 package com.mac.busradar.controller;
 
-import com.mac.busradar.dto.RouteDTO;
-import com.mac.busradar.dto.StopDTO;
-import com.mac.busradar.dto.StopScheduleDTO;
-import com.mac.busradar.dto.VehicleStatusDTO;
+import com.mac.busradar.dto.*;
 import com.mac.busradar.service.BusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +18,13 @@ public class BusController {
     @GetMapping("routes")
     public Mono<ResponseEntity<List<RouteDTO>>> getRoutes() {
         return busService.getRoutes()
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("routesBuilder")
+    public Mono<ResponseEntity<List<RouteBuilderDTO>>> getRoutesBuilder(@RequestParam String patternIds) {
+        return busService.getRoutesBuilder(patternIds)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

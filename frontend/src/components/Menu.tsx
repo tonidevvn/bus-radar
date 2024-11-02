@@ -1,17 +1,15 @@
-import { Button, Input, Menu, Layout, Typography, Space } from 'antd'
-import React, { useState } from 'react'
+import { Input, Layout, Menu, Space, Typography } from 'antd'
+import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { setPatternIDs } from '../store/slices/busSlice'
+import { AppDispatch } from '../store/store'
 import { Route } from '../types/type'
 
 const { Sider } = Layout
 const { Title } = Typography
 
-const LeftMenu = ({
-    routes,
-    setPickRoute,
-}: {
-    routes: { [key: string]: Route[] }
-    setPickRoute: (routes: Route[]) => void
-}) => {
+const LeftMenu = ({ routes }: { routes: { [key: string]: Route[] } }) => {
+    const dispatch = useDispatch<AppDispatch>()
     const [searchRoute, setSearchRoute] = useState('')
 
     return (
@@ -60,7 +58,8 @@ const LeftMenu = ({
                     }))}
                 onSelect={({ key }) => {
                     const route = routes[key]
-                    setPickRoute(route)
+                    const patternIDs = route.map((r) => r.patternID).join(',')
+                    dispatch(setPatternIDs(patternIDs))
                 }}
             />
         </Sider>
