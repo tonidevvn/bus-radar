@@ -9,6 +9,9 @@ const RouteBuilderRenderer = () => {
     const [routesBuilder, setRoutesBuilder] = useState<RouteBuilder[]>([])
 
     useEffect(() => {
+        if (!patternIDs) {
+            return
+        }
         GET_ROUTES_BUILDER(patternIDs).then((data) => {
             setRoutesBuilder(data)
         })

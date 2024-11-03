@@ -42,6 +42,20 @@ const GET_STOPS = async (patternIds: string): Promise<Stop[]> => {
   }
 }
 
+const GET_STOP_TIMES = async (stopID: number): Promise<StopSchedule> => {
+  try {
+    const response: AxiosResponse<StopSchedule> = await instance.get("/api/stopTimes", {
+      params: {
+        stopID
+      }
+    });
+    return response.data
+  } catch (error) {
+    console.error("Error fetching stop times: ", error);
+    throw error;
+  }
+}
+
 const GET_VEHICLE_STATUS = async (patternIds: string): Promise<VehicleStatus[]> => {
   try {
     const response: AxiosResponse<VehicleStatus[]> = await instance.get("/api/vehicleStatus", { params: { patternIds: patternIds } });
@@ -67,7 +81,11 @@ const GET_PREDICTIONS = async (stopId: number): Promise<StopSchedule> => {
 }
 
 export {
-  GET_PREDICTIONS, GET_ROUTES, GET_ROUTES_BUILDER,
+  GET_PREDICTIONS,
+  GET_ROUTES,
+  GET_ROUTES_BUILDER,
+  GET_STOP_TIMES,
   GET_STOPS,
   GET_VEHICLE_STATUS
 };
+

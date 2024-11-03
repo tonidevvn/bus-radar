@@ -18,9 +18,18 @@ const VehicleRenderer = () => {
     const patternIDs = useSelector((state: RootState) => state.bus.patternIDs)
 
     useEffect(() => {
-        GET_VEHICLE_STATUS(patternIDs).then((data) => {
-            setVehicles(data)
-        })
+        const fetchData = () => {
+            if (!patternIDs) {
+                return
+            }
+            GET_VEHICLE_STATUS(patternIDs).then((data) => {
+                setVehicles(data)
+            })
+        }
+
+        const interval = setInterval(fetchData, 3000)
+
+        return () => clearInterval(interval)
     }, [patternIDs])
 
     return (

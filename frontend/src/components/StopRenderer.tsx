@@ -3,7 +3,7 @@ import L from 'leaflet'
 import { useEffect, useState } from 'react'
 import { Marker, Popup } from 'react-leaflet'
 import { useSelector } from 'react-redux'
-import { GET_STOPS } from '../api/bus_api'
+import { GET_STOP_TIMES, GET_STOPS } from '../api/bus_api'
 import { Stop } from '../types/type'
 import StopInfo from './StopInfo'
 
@@ -27,10 +27,21 @@ const StopsRenderer = () => {
     const patternIDs = useSelector((state: RootState) => state.bus.patternIDs)
 
     useEffect(() => {
+        if (!patternIDs) {
+            return
+        }
         GET_STOPS(patternIDs).then((data) => {
             setStops(data)
         })
     }, [patternIDs])
+
+    useEffect(() => {
+        if (pickStop) {
+            GET_STOP_TIMES(pickStop?.stopNumber).then((data) => {
+                console.log(data)
+            })
+        }
+    }, [pickStop])
 
     return (
         <>

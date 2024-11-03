@@ -36,6 +36,11 @@ public class BusController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("stopTimes")
+    public ResponseEntity<List<StopTimesDTO>> getStopTimes(@RequestParam String stopID) {
+        return ResponseEntity.ok(busService.getStopTimes(stopID));
+    }
+
     @GetMapping("vehicleStatus")
     public Mono<ResponseEntity<List<VehicleStatusDTO>>> getVehicleStatus(@RequestParam String patternIds) {
         return busService.getVehicleStatus(patternIds)

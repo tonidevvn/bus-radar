@@ -4,14 +4,12 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useState } from 'react'
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
-import { useDispatch } from 'react-redux'
 import { GET_ROUTES } from './api/bus_api'
 import LeftMenu from './components/Menu'
 import RouteBuilderRenderer from './components/RouterBuilderRenderer'
 import StopsRenderer from './components/StopRenderer'
 import VehicleRenderer from './components/VehicleRenderer'
 import Weather from './components/Weather'
-import { AppDispatch } from './store/store'
 import { Route } from './types/type'
 
 const { Content } = Layout
@@ -24,12 +22,10 @@ const CurrentLocationIcon = L.icon({
 })
 
 function App() {
-    const [pickRoute, setPickRoute] = useState<Route[]>([])
     const [routes, setRoutes] = useState<{ [key: string]: Route[] }>({})
     const [currentLocation, setCurrentLocation] = useState<
         [number, number] | null
     >(null)
-    const dispatch = useDispatch<AppDispatch>()
 
     useEffect(() => {
         GET_ROUTES().then((data) => {
