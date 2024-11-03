@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { Route, RouteBuilder, Stop, StopSchedule, VehicleStatus } from "../types/type";
+import { Route, RouteBuilder, Stop, StopSchedule, StopScheduleData, VehicleStatus } from "../types/type";
 import instance from "./instance";
 
 
@@ -42,11 +42,13 @@ const GET_STOPS = async (patternIds: string): Promise<Stop[]> => {
   }
 }
 
-const GET_STOP_TIMES = async (stopID: number): Promise<StopSchedule> => {
+const GET_STOP_TIMES = async (routeID: number, stopID: number, dayOfWeek: string): Promise<StopScheduleData[]> => {
   try {
-    const response: AxiosResponse<StopSchedule> = await instance.get("/api/stopTimes", {
+    const response: AxiosResponse<StopScheduleData[]> = await instance.get("/api/stopTimes", {
       params: {
-        stopID
+        routeID,
+        stopID,
+        dayOfWeek,
       }
     });
     return response.data

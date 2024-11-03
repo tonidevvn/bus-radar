@@ -1,12 +1,11 @@
 package com.mac.busradar.service;
 
 import com.mac.busradar.dto.*;
-import com.mac.busradar.model.Stop;
-import com.mac.busradar.model.StopTimes;
 import com.mac.busradar.model.Vehicle;
 import com.mac.busradar.repository.StopRepository;
 import com.mac.busradar.repository.StopTimesRepository;
-import com.mac.busradar.repository.VehicleRepository;
+import com.mac.busradar.repository.TripRepository;
+import com.mac.busradar.mongo_repository.VehicleRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -14,22 +13,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 @Service
 public class BusService {
     public final WebClient webClient;
-    private final StopRepository stopRepository;
     private final VehicleRepository vehicleRepository;
     private final StopTimesRepository stopTimesRepository;
+    private final TripRepository tripRepository;
     private final ModelMapper modelMapper;
 
-    public BusService(WebClient.Builder webClientBuilder, StopRepository stopRepository, VehicleRepository vehicleRepository, StopTimesRepository stopTimesRepository, ModelMapper modelMapper) {
+    public BusService(WebClient.Builder webClientBuilder, StopRepository stopRepository, VehicleRepository vehicleRepository, StopTimesRepository stopTimesRepository, TripRepository tripRepository, ModelMapper modelMapper) {
         this.webClient = webClientBuilder.baseUrl("https://windsor.mytransitride.com").build();
-        this.stopRepository = stopRepository;
         this.vehicleRepository = vehicleRepository;
         this.stopTimesRepository = stopTimesRepository;
+        this.tripRepository = tripRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -64,14 +64,11 @@ public class BusService {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<>() {
                 });
-        List<Stop> stops = Objects.requireNonNull(stopsData.block()).stream().map(stopDTO -> modelMapper.map(stopDTO, Stop.class)).toList();
-        stopRepository.saveAll(stops);
         return stopsData;
     }
 
-    public List<StopTimesDTO> getStopTimes(String stopId) {
-        List<StopTimes> stopTimes = stopTimesRepository.findAllByStopIDOrderByDepartureTimeAsc(Integer.parseInt(stopId));
-        return stopTimes.stream().map(st -> modelMapper.map(st, StopTimesDTO.class)).toList();
+    public List<StopSDTO> getStopTimes(String routeId, String stopId, String dayOfWeek) {
+        return stopTimesRepository.findScheduleForDay(Long.parseLong(stopId), Long.parseLong(routeId), dayOfWeek);
     }
 
     public Mono<List<VehicleStatusDTO>> getVehicleStatus(String patternIds) {

@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+    mysql:
+        image: mysql:8
+        container_name: gtfs_mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: root_password
+            MYSQL_DATABASE: gtfs_db
+            MYSQL_USER: user
+            MYSQL_PASSWORD: user_password
+        ports:
+            - '3306:3306'
+        volumes:
+            - mysql_data:/var/lib/mysql
+            - ./scripts:/docker-entrypoint-initdb.d # Mount a volume for initialization scripts
+            - ./gtfs_import:/var/lib/mysql-files
+
+volumes:
+    mysql_data:

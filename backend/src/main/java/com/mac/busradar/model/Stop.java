@@ -1,25 +1,50 @@
 package com.mac.busradar.model;
 
-import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-@Document(collection = "stop")
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+@Entity
+@Table(name = "stops")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Stop {
+
     @Id
-    private String id;
-    public int stopID;
-    public int stopNumber;
-    public int seq;
-    public int patternID;
-    public String stopCode;
-    public String stopName;
-    public float latitude;
-    public float longitude;
-    public boolean isPublic;
-    public boolean isActive;
+    @Column(name = "stop_id", length = 255)
+    private String stopId;
+
+    @Column(name = "stop_code", length = 255)
+    private String stopCode;
+
+    @Column(name = "stop_name", length = 255)
+    private String stopName;
+
+    @Column(name = "stop_desc", length = 255)
+    private String stopDesc;
+
+    @Column(name = "stop_lat")
+    private double stopLat;
+
+    @Column(name = "stop_lon")
+    private double stopLon;
+
+    @Column(name = "zone_id", length = 255)
+    private String zoneId;
+
+    @Column(name = "stop_url", length = 255)
+    private String stopUrl;
+
+    @Column(name = "location_type")
+    private int locationType;
+
+    @Column(name = "parent_station", length = 255)
+    private String parentStation;
+
+    @Column(name = "wheelchair_boarding")
+    private boolean wheelchairBoarding;
+
 }

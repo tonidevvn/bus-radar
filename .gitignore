@@ -1,5 +1,5 @@
 # Ignore Maven or Gradle build directories
-/target/
+/backend/target/
 /build/
 
 # Ignore IntelliJ IDEA project files

@@ -1,0 +1,2 @@
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url
+1,Transit Windsor,http://www.citywindsor.ca/residents/transitwindsor/Pages/Transit-Windsor.aspx,America/New_York,en,,https://www.citywindsor.ca/residents/transitwindsor/fares/pages/fares.aspx

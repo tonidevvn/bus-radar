@@ -37,8 +37,10 @@ public class BusController {
     }
 
     @GetMapping("stopTimes")
-    public ResponseEntity<List<StopTimesDTO>> getStopTimes(@RequestParam String stopID) {
-        return ResponseEntity.ok(busService.getStopTimes(stopID));
+    public ResponseEntity<List<StopSDTO>> getStopTimes(@RequestParam String routeID,
+                                                            @RequestParam String stopID,
+                                                           @RequestParam String dayOfWeek) {
+        return ResponseEntity.ok(busService.getStopTimes(routeID, stopID, dayOfWeek));
     }
 
     @GetMapping("vehicleStatus")

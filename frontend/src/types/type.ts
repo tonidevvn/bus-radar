@@ -70,6 +70,11 @@ type StopSchedule = {
   grpByPtrn: GroupByPattern[];
 };
 
+type StopScheduleData = {
+  arrivalTime: string
+  departureTime: string
+}
+
 type GroupByPattern = {
   directId: number;
   directName: string | null;
@@ -128,4 +133,5 @@ type WeatherValue = {
 }
 
 
-export type { Route, RouteBuilder, Stop, StopSchedule, Timeline, VehicleStatus }
+export type { Route, RouteBuilder, Stop, StopSchedule, StopScheduleData, Timeline, VehicleStatus }
+

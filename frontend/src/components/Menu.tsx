@@ -1,7 +1,7 @@
 import { Input, Layout, Menu, Space, Typography } from 'antd'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { setPatternIDs } from '../store/slices/busSlice'
+import { setPatternIDs, setRouteID } from '../store/slices/busSlice'
 import { AppDispatch } from '../store/store'
 import { Route } from '../types/type'
 
@@ -15,21 +15,16 @@ const LeftMenu = ({ routes }: { routes: { [key: string]: Route[] } }) => {
     return (
         <Sider
             width={280}
-            className="bg-[#f0f2f5] h-screen overflow-y-auto border-r border-r-[#d9d9d9] border-r-solid"
+            className='bg-[#f0f2f5] h-screen overflow-y-auto border-r border-r-[#d9d9d9] border-r-solid'
         >
-            <div className="p-[16px]">
-                <Title
-                    level={4}
-                    className="mb-[16px] text-[#001529]"
-                >
+            <div className='p-[16px]'>
+                <Title level={4} className='mb-[16px] text-[#001529]'>
                     Route Finder
                 </Title>
-                <Space direction='vertical'
-                       className="w-full"
-                       size={16}>
+                <Space direction='vertical' className='w-full' size={16}>
                     <Input
                         placeholder='Enter route'
-                        className="rounded-[8px]"
+                        className='rounded-[8px]'
                         onChange={(e) => setSearchRoute(e.target.value)}
                     />
                 </Space>
@@ -37,7 +32,7 @@ const LeftMenu = ({ routes }: { routes: { [key: string]: Route[] } }) => {
             <Menu
                 mode='inline'
                 defaultSelectedKeys={['1']}
-                className="h-[calc(100vh - 180px)] overflow-y-auto border-r-0"
+                className='h-[calc(100vh - 180px)] overflow-y-auto border-r-0'
                 items={Object.entries(routes)
                     .filter(([, route]) => {
                         if (!searchRoute) return true
@@ -52,6 +47,7 @@ const LeftMenu = ({ routes }: { routes: { [key: string]: Route[] } }) => {
                 onSelect={({ key }) => {
                     const route = routes[key]
                     const patternIDs = route.map((r) => r.patternID).join(',')
+                    dispatch(setRouteID(route[0].routeNumber))
                     dispatch(setPatternIDs(patternIDs))
                 }}
             />

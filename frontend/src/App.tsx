@@ -8,6 +8,7 @@ import { GET_ROUTES } from './api/bus_api'
 import LeftMenu from './components/Menu'
 import RouteBuilderRenderer from './components/RouterBuilderRenderer'
 import StopsRenderer from './components/StopRenderer'
+import StopSchedule from './components/StopSchedule'
 import VehicleRenderer from './components/VehicleRenderer'
 import Weather from './components/Weather'
 import { Route } from './types/type'
@@ -53,17 +54,17 @@ function App() {
     }, [])
 
     return (
-        <Layout className="min-h-screen">
+        <Layout className='min-h-screen'>
             <LeftMenu routes={routes} />
 
             <Layout>
-                <Content className="h-screen p-[24px]">
+                <Content className='h-screen p-[24px]'>
                     <MapContainer
                         center={currentLocation || [42.32501, -82.93877]}
                         zoom={13}
                         scrollWheelZoom={true}
-                        className="h-full w-full"
-                        >
+                        className='h-full w-full'
+                    >
                         <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -80,6 +81,7 @@ function App() {
                         <StopsRenderer />
                         <VehicleRenderer />
                         <RouteBuilderRenderer />
+                        <StopSchedule />
 
                         <Weather currentLocation={currentLocation} />
                     </MapContainer>

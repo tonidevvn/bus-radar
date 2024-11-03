@@ -2,10 +2,12 @@ import { RootState } from '@reduxjs/toolkit/query'
 import L from 'leaflet'
 import { useEffect, useState } from 'react'
 import { Marker, Popup } from 'react-leaflet'
-import { useSelector } from 'react-redux'
-import { GET_STOP_TIMES, GET_STOPS } from '../api/bus_api'
+import { useDispatch, useSelector } from 'react-redux'
+import { GET_STOPS } from '../api/bus_api'
+import { setPickStop } from '../store/slices/busSlice'
+import { AppDispatch } from '../store/store'
 import { Stop } from '../types/type'
-import StopInfo from './StopInfo'
+import StopSchedule from './StopSchedule'
 
 const DefaultIcon = L.icon({
     iconUrl: '/circle.png',
@@ -23,8 +25,10 @@ const HighlightIcon = L.icon({
 
 const StopsRenderer = () => {
     const [stops, setStops] = useState<Stop[]>([])
-    const [pickStop, setPickStop] = useState<Stop | null>(null)
-    const patternIDs = useSelector((state: RootState) => state.bus.patternIDs)
+    const { patternIDs, pickStop } = useSelector(
+        (state: RootState) => state.bus
+    )
+    const dispatch = useDispatch<AppDispatch>()
 
     useEffect(() => {
         if (!patternIDs) {
@@ -34,14 +38,6 @@ const StopsRenderer = () => {
             setStops(data)
         })
     }, [patternIDs])
-
-    useEffect(() => {
-        if (pickStop) {
-            GET_STOP_TIMES(pickStop?.stopNumber).then((data) => {
-                console.log(data)
-            })
-        }
-    }, [pickStop])
 
     return (
         <>
@@ -55,11 +51,14 @@ const StopsRenderer = () => {
                             : DefaultIcon
                     }
                     eventHandlers={{
-                        click: () => setPickStop(stop),
+                        click: () => {
+                            dispatch(setPickStop(stop))
+                        },
                     }}
                 >
                     <Popup>
-                        <StopInfo stop={stop} />
+                        {/* <StopInfo stop={stop} /> */}
+                        <StopSchedule />
                     </Popup>
                 </Marker>
             ))}
