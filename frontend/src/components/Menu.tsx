@@ -15,24 +15,21 @@ const LeftMenu = ({ routes }: { routes: { [key: string]: Route[] } }) => {
     return (
         <Sider
             width={280}
-            style={{
-                background: '#f0f2f5',
-                height: '100vh',
-                overflowY: 'auto',
-                borderRight: '1px solid #d9d9d9',
-            }}
+            className="bg-[#f0f2f5] h-screen overflow-y-auto border-r border-r-[#d9d9d9] border-r-solid"
         >
-            <div style={{ padding: '16px' }}>
+            <div className="p-[16px]">
                 <Title
                     level={4}
-                    style={{ marginBottom: '16px', color: '#001529' }}
+                    className="mb-[16px] text-[#001529]"
                 >
                     Route Finder
                 </Title>
-                <Space direction='vertical' style={{ width: '100%' }} size={16}>
+                <Space direction='vertical'
+                       className="w-full"
+                       size={16}>
                     <Input
                         placeholder='Enter route'
-                        style={{ borderRadius: '8px' }}
+                        className="rounded-[8px]"
                         onChange={(e) => setSearchRoute(e.target.value)}
                     />
                 </Space>
@@ -40,11 +37,7 @@ const LeftMenu = ({ routes }: { routes: { [key: string]: Route[] } }) => {
             <Menu
                 mode='inline'
                 defaultSelectedKeys={['1']}
-                style={{
-                    height: 'calc(100vh - 180px)',
-                    overflowY: 'auto',
-                    borderRight: 0,
-                }}
+                className="h-[calc(100vh - 180px)] overflow-y-auto border-r-0"
                 items={Object.entries(routes)
                     .filter(([, route]) => {
                         if (!searchRoute) return true

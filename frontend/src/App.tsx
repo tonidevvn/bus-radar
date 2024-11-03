@@ -53,17 +53,17 @@ function App() {
     }, [])
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
+        <Layout className="min-h-screen">
             <LeftMenu routes={routes} />
 
             <Layout>
-                <Content style={{ padding: '24px', height: '100vh' }}>
+                <Content className="h-screen p-[24px]">
                     <MapContainer
                         center={currentLocation || [42.32501, -82.93877]}
                         zoom={13}
                         scrollWheelZoom={true}
-                        style={{ height: '100%', width: '100%' }}
-                    >
+                        className="h-full w-full"
+                        >
                         <TileLayer
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'

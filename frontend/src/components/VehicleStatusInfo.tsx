@@ -17,7 +17,7 @@ const VehicleStatusInfo = ({ vehicle }: { vehicle: VehicleStatus | null }) => {
                             <img
                                 src={busIcon.full}
                                 alt='Full Capacity'
-                                style={{ width: 100 }}
+                                className="w-[100px]"
                             />
                             <Text strong>Full</Text>
                         </Space>
@@ -30,7 +30,7 @@ const VehicleStatusInfo = ({ vehicle }: { vehicle: VehicleStatus | null }) => {
                             <img
                                 src={busIcon.medium}
                                 alt='Medium Capacity'
-                                style={{ width: 100 }}
+                                className="w-[100px]"
                             />
                             <Text strong>Medium</Text>
                         </Space>
@@ -43,7 +43,7 @@ const VehicleStatusInfo = ({ vehicle }: { vehicle: VehicleStatus | null }) => {
                             <img
                                 src={busIcon.light}
                                 alt='Light Capacity'
-                                style={{ width: 100 }}
+                                className="w-[100px]"
                             />
                             <Text strong>Light</Text>
                         </Space>
@@ -56,7 +56,7 @@ const VehicleStatusInfo = ({ vehicle }: { vehicle: VehicleStatus | null }) => {
                             <img
                                 src={busIcon.unavailable}
                                 alt='Unavailable Capacity'
-                                style={{ width: 100 }}
+                                className="w-[100px]"
                             />
                             <Text strong>Unavailable</Text>
                         </Space>
