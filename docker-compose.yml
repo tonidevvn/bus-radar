@@ -1,20 +1,55 @@
-version: '3.8'
+version: "3.8"
 
 services:
-    mysql:
-        image: mysql:8
-        container_name: gtfs_mysql
-        environment:
-            MYSQL_ROOT_PASSWORD: root_password
-            MYSQL_DATABASE: gtfs_db
-            MYSQL_USER: user
-            MYSQL_PASSWORD: user_password
-        ports:
-            - '3306:3306'
-        volumes:
-            - mysql_data:/var/lib/mysql
-            - ./scripts:/docker-entrypoint-initdb.d # Mount a volume for initialization scripts
-            - ./gtfs_import:/var/lib/mysql-files
+  mysql:
+    image: mysql:8
+    container_name: gtfs_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: gtfs_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./scripts:/docker-entrypoint-initdb.d # Mount a volume for initialization scripts
+      - ./gtfs_import:/var/lib/mysql-files
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     - WEATHER_API_KEY=${WEATHER_API_KEY}
+  #     - DB_HOST=localhost
+  #     - DB_PORT=3306
+  #     - DB_NAME=gtfs_db
+  #     - DB_USER=user
+  #     - DB_PASSWORD=user_password
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     mysql:
+  #       condition: service_healthy
+  #   restart: on-failure
+
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   environment:
+  #     - VITE_API_URL=http://localhost:8080
+  #   ports:
+  #     - "5173:5173"
+  #   depends_on:
+  #     - backend
+  #   restart: on-failure
 
 volumes:
-    mysql_data:
+  mysql_data:
