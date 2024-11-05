@@ -29,3 +29,75 @@ The frontend, developed with ReactJS, provides an intuitive interface that allow
 - **Interactive Route Maps**: Visual display of active routes, live locations, and potential delays.
 - **Comprehensive Data Integration**: Prediction model considers traffic, weather, and operational factors for robust performance.
 - **Analytics for Authorities**: Insights to help transport authorities optimize routes and schedules based on observed patterns and data.
+
+## Project Setup and Running Guide
+
+This guide will help you set up and run the project, which includes:
+
+- Running MySQL as a Docker container.
+- Running the Spring Boot backend.
+- Running the Vite + React frontend.
+
+## Prerequisites
+
+- **Docker**: Ensure Docker is installed and running.
+- **Java**: JDK 21 or later is required to run the backend.
+- **Node.js and npm**: Required to run the frontend. Node.js version 14 or higher is recommended.
+
+## Steps to Run the Project
+
+### 1. Start MySQL using Docker Compose
+
+The `docker-compose.yml` file is configured to set up MySQL with persistent storage.
+
+To start MySQL, run:
+
+```bash
+docker-compose up -d
+```
+
+### 2. Run the Backend (Spring Boot)
+
+Navigate to the backend directory
+
+```bash
+cd .\backend
+```
+
+To start the Spring Boot application:
+
+```bash
+mvn spring-boot:run
+```
+
+### 3. Run the Frontend (Vite + React)
+
+Navigate to the frontend directory
+
+```bash
+cd .\frontend
+```
+
+To install dependencies
+
+```bash
+npm install
+```
+
+To start the frontend:
+
+```bash
+npm run dev
+```
+
+The frontend server will be available on http://localhost:5173 by default.
+
+## Accessing the Application
+
+### Frontend:
+
+Visit http://localhost:5173 to access the frontend.
+
+### Backend API:
+
+The backend is accessible at http://localhost:8080
