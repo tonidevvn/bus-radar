@@ -3,7 +3,7 @@ version: "3.8"
 services:
   mysql:
     image: mysql:8
-    container_name: gtfs_mysql
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: gtfs_db
@@ -21,35 +21,33 @@ services:
       timeout: 10s
       retries: 5
 
-  # backend:
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     - WEATHER_API_KEY=${WEATHER_API_KEY}
-  #     - DB_HOST=localhost
-  #     - DB_PORT=3306
-  #     - DB_NAME=gtfs_db
-  #     - DB_USER=user
-  #     - DB_PASSWORD=user_password
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     mysql:
-  #       condition: service_healthy
-  #   restart: on-failure
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - WEATHER_API_KEY=${WEATHER_API_KEY}
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/gtfs_db?createDatabaseIfNotExist=true
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=user_password
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
 
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     - VITE_API_URL=http://localhost:8080
-  #   ports:
-  #     - "5173:5173"
-  #   depends_on:
-  #     - backend
-  #   restart: on-failure
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: on-failure
+    environment:
+      - VITE_API_URL=http://localhost:8080
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
 
 volumes:
   mysql_data:
