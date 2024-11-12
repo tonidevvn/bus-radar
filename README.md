@@ -34,9 +34,10 @@ The frontend, developed with ReactJS, provides an intuitive interface that allow
 
 This guide will help you set up and run the project, which includes:
 
-- Running MySQL as a Docker container.
-- Running the Spring Boot backend.
-- Running the Vite + React frontend.
+- Start the Project with Docker Compose.
+- Running the Spring Boot backend using command line.
+- Running the Vite + React frontend using command line.
+- Stop the Project running.
 
 ## Prerequisites
 
@@ -46,17 +47,28 @@ This guide will help you set up and run the project, which includes:
 
 ## Steps to Run the Project
 
-### 1. Start MySQL using Docker Compose
+### 1. Start the Project with Docker Compose
 
-The `docker-compose.yml` file is configured to set up MySQL with persistent storage.
-
+The `docker-compose.yml` file is configured to set up MySQL, the Spring Boot backend, and the Vite + React frontend, all in Docker containers.
 To start MySQL, run:
 
 ```bash
 docker-compose up -d
 ```
 
-### 2. Run the Backend (Spring Boot)
+This command will:
+
+- Start the MySQL container, initialize the database, and expose it on port 3306.
+- Start the Spring Boot backend on http://localhost:8080.
+- Start the Vite + React frontend on http://localhost:5173.
+
+Can check the logs to verify that all services are running correctly:
+
+```bash
+docker-compose logs -f
+```
+
+### 2. (Optional) Run the Backend (Spring Boot)
 
 Navigate to the backend directory
 
@@ -70,7 +82,7 @@ To start the Spring Boot application:
 mvn spring-boot:run
 ```
 
-### 3. Run the Frontend (Vite + React)
+### 3. (Optional) Run the Frontend (Vite + React)
 
 Navigate to the frontend directory
 
@@ -92,12 +104,20 @@ npm run dev
 
 The frontend server will be available on http://localhost:5173 by default.
 
+## Stopping the Project
+
+To stop all services, run:
+
+```bash
+docker-compose down
+```
+
 ## Accessing the Application
 
 ### Frontend:
 
-Visit http://localhost:5173 to access the frontend.
+:rocket: Frontend is accessible at http://localhost:5173
 
 ### Backend API:
 
-The backend is accessible at http://localhost:8080
+:rocket: Backend is accessible at http://localhost:8080
