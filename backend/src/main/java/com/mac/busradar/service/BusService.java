@@ -1,11 +1,15 @@
 package com.mac.busradar.service;
 
 import com.mac.busradar.dto.*;
+import com.mac.busradar.model.HistoricalArrival;
 import com.mac.busradar.model.Vehicle;
+import com.mac.busradar.mongo_repository.HistoricalArrivalRepository;
 import com.mac.busradar.repository.StopRepository;
 import com.mac.busradar.repository.StopTimesRepository;
 import com.mac.busradar.repository.TripRepository;
 import com.mac.busradar.mongo_repository.VehicleRepository;
+import com.mac.busradar.util.MathUtils;
+import com.mac.busradar.util.TimeUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -21,13 +26,16 @@ import java.util.Objects;
 public class BusService {
     public final WebClient webClient;
     private final VehicleRepository vehicleRepository;
+    private final HistoricalArrivalRepository historicalArrivalRepository;
     private final StopTimesRepository stopTimesRepository;
     private final TripRepository tripRepository;
     private final ModelMapper modelMapper;
+    private double minDistance = 10;
 
-    public BusService(WebClient.Builder webClientBuilder, StopRepository stopRepository, VehicleRepository vehicleRepository, StopTimesRepository stopTimesRepository, TripRepository tripRepository, ModelMapper modelMapper) {
+    public BusService(WebClient.Builder webClientBuilder, StopRepository stopRepository, VehicleRepository vehicleRepository, HistoricalArrivalRepository historicalArrivalRepository, StopTimesRepository stopTimesRepository, TripRepository tripRepository, ModelMapper modelMapper) {
         this.webClient = webClientBuilder.baseUrl("https://windsor.mytransitride.com").build();
         this.vehicleRepository = vehicleRepository;
+        this.historicalArrivalRepository = historicalArrivalRepository;
         this.stopTimesRepository = stopTimesRepository;
         this.tripRepository = tripRepository;
         this.modelMapper = modelMapper;
@@ -81,7 +89,45 @@ public class BusService {
                 .bodyToMono(new ParameterizedTypeReference<>() {
                 });
         List<Vehicle> vehicles = Objects.requireNonNull(vehicleData.block()).stream().map(vehicleStatusDTO -> modelMapper.map(vehicleStatusDTO, Vehicle.class)).toList();
-        vehicleRepository.saveAll(vehicles);
+
+        // When vehicle reaches nearest bus stop, record the time
+        String startTime = TimeUtils.getCurrentTime(-5);
+        String endTime = TimeUtils.getCurrentTime(5);
+        Long routeID = 18L;
+        String dayOfWeek = "saturday";
+        List<HistoricalArrivalDTO> dtos = stopTimesRepository.findSchedule(routeID, startTime, endTime, dayOfWeek);
+
+        // Calculate haversine distance
+        List<HistoricalArrival> historicalArrivals = new ArrayList<>();
+        for (HistoricalArrivalDTO dto : dtos) {
+            for (Vehicle vehicle : vehicles) {
+                double distance = MathUtils.haversine(vehicle.lat, vehicle.lng, dto.getStopLat(), dto.getStopLon());
+                if (distance < minDistance) {
+                    HistoricalArrival historicalArrival = new HistoricalArrival(
+                            routeID,
+                            dto.getStopCode(),
+                            dto.getStopLat(),
+                            dto.getStopLon(),
+                            dto.getArrivalTime(),
+                            dto.getDepartureTime(),
+                            vehicle.getLat(),
+                            vehicle.getLng(),
+                            vehicle.getVelocity(),
+                            vehicle.getName(),
+                            vehicle.getPatternId(),
+                            vehicle.getVehicleCapacityIndicator(),
+                            distance,
+                            TimeUtils.getCurrentTime(0),
+                            dayOfWeek
+                    );
+                    historicalArrivals.add(historicalArrival);
+                    break;
+                }
+            }
+        }
+        if (!historicalArrivals.isEmpty()) {
+            historicalArrivalRepository.saveAll(historicalArrivals);
+        }
         return vehicleData;
     }
 

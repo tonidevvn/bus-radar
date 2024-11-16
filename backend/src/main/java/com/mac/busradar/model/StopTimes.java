@@ -35,4 +35,8 @@ public class StopTimes {
     @ManyToOne
     @JoinColumn(name = "trip_id", insertable = false, updatable = false)
     private Trips trip;
+
+    @ManyToOne
+    @JoinColumn(name = "stop_id", insertable = false, updatable = false)
+    private Stop stop;
 }

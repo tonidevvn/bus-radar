@@ -47,4 +47,5 @@ public class Stop {
     @Column(name = "wheelchair_boarding")
     private boolean wheelchairBoarding;
 
+
 }

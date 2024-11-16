@@ -1,5 +1,6 @@
 package com.mac.busradar.repository;
 
+import com.mac.busradar.dto.HistoricalArrivalDTO;
 import com.mac.busradar.dto.StopSDTO;
 import com.mac.busradar.model.StopTimes;
 import com.mac.busradar.model.StopTimesId;
@@ -32,4 +33,28 @@ public interface StopTimesRepository extends JpaRepository<StopTimes, StopTimesI
     List<StopSDTO> findScheduleForDay(@Param("stopId") Long stopId,
                                       @Param("routeId") Long routeId,
                                       @Param("dayOfWeek") String dayOfWeek);
+
+
+    @Query("SELECT new com.mac.busradar.dto.HistoricalArrivalDTO(st.stop.stopId, st.stop.stopLat, st.stop.stopLon, st.arrivalTime, st.departureTime) " +
+            "FROM StopTimes st " +
+            "JOIN st.trip t " +
+            "JOIN t.calendar c " +
+            "JOIN st.stop s " +
+            "WHERE t.routeId = :routeId " +
+            "AND st.arrivalTime >= :startArrivalTime " +
+            "AND st.arrivalTime <= :endArrivalTime " +
+            "AND (" +
+            "   (:dayOfWeek = 'monday' AND c.monday = true) OR " +
+            "   (:dayOfWeek = 'tuesday' AND c.tuesday = true) OR " +
+            "   (:dayOfWeek = 'wednesday' AND c.wednesday = true) OR " +
+            "   (:dayOfWeek = 'thursday' AND c.thursday = true) OR " +
+            "   (:dayOfWeek = 'friday' AND c.friday = true) OR " +
+            "   (:dayOfWeek = 'saturday' AND c.saturday = true) OR " +
+            "   (:dayOfWeek = 'sunday' AND c.sunday = true) " +
+            ") " +
+            "ORDER BY st.arrivalTime")
+    List<HistoricalArrivalDTO> findSchedule(@Param("routeId") Long routeId,
+                                            @Param("startArrivalTime") String startArrivalTime,
+                                            @Param("endArrivalTime") String endArrivalTime,
+                                            @Param("dayOfWeek") String dayOfWeek);
 }
