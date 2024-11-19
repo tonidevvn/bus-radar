@@ -116,8 +116,8 @@ docker-compose down
 
 ### Frontend:
 
-:rocket: Frontend is accessible at http://localhost:5173
+:link: Frontend is accessible at http://localhost:5173
 
 ### Backend API:
 
-:rocket: Backend is accessible at http://localhost:8080
+:link: Backend is accessible at http://localhost:8080
