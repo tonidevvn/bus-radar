@@ -1,9 +1,14 @@
 package com.mac.busradar.service;
 
+import com.mac.busradar.cache.RedisService;
 import com.mac.busradar.dto.RouteDTO;
 import com.mac.busradar.dto.WeatherDTO;
+import com.mac.busradar.dto.WeatherRealtimeDTO;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -18,7 +23,7 @@ public class WeatherService {
     @Value("${weather.api.key}")
     private String API_KEY;
 
-    public WeatherService(WebClient.Builder webClientBuilder) {
+    public WeatherService(WebClient.Builder webClientBuilder, RedisService redisService) {
         this.webClient = webClientBuilder.baseUrl("https://api.tomorrow.io").build();
     }
 
@@ -45,6 +50,19 @@ public class WeatherService {
             return Mono.just(weatherDTO.getTimelines().getDaily());
         }
         return null;
+    }
+
+    @Cacheable(value = "weather-realtime-cache", key = "#lat + '-' + #lon")
+    @CacheEvict(value = "weather-realtime-cache", key = "#lat + '-' + #lon", allEntries = false, beforeInvocation = false)
+    public WeatherRealtimeDTO getRealtime(Double lat, Double lon) {
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/v4/weather/realtime")
+                        .queryParam("apikey", API_KEY)
+                        .queryParam("location", lat + "," + lon).build())
+                .retrieve()
+                .bodyToMono(WeatherRealtimeDTO.class)
+                .block();
     }
 }
 

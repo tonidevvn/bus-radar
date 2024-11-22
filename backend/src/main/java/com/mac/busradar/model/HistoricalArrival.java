@@ -24,4 +24,7 @@ public class HistoricalArrival {
     private double distance;
     private String busArrivalTime;
     private String dayOfWeek;
+    private Double rainIntensity;
+    private Integer snowIntensity;
+    private Double temperature;
 }

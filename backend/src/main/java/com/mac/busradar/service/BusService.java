@@ -31,11 +31,12 @@ public class BusService {
     private final HistoricalArrivalRepository historicalArrivalRepository;
     private final StopTimesRepository stopTimesRepository;
     private final TripRepository tripRepository;
+    private WeatherService weatherService;
     private final RedisService redisService;
     private final ModelMapper modelMapper;
-    private double minDistance = 5L;
+    private double minDistance = 10L;
 
-    public BusService(WebClient.Builder webClientBuilder, StopRepository stopRepository, VehicleRepository vehicleRepository, HistoricalArrivalRepository historicalArrivalRepository, StopTimesRepository stopTimesRepository, TripRepository tripRepository, RedisService redisService, ModelMapper modelMapper) {
+    public BusService(WebClient.Builder webClientBuilder, StopRepository stopRepository, VehicleRepository vehicleRepository, HistoricalArrivalRepository historicalArrivalRepository, StopTimesRepository stopTimesRepository, TripRepository tripRepository, RedisService redisService, ModelMapper modelMapper, WeatherService weatherService) {
         this.webClient = webClientBuilder.baseUrl("https://windsor.mytransitride.com").build();
         this.vehicleRepository = vehicleRepository;
         this.historicalArrivalRepository = historicalArrivalRepository;
@@ -43,6 +44,7 @@ public class BusService {
         this.tripRepository = tripRepository;
         this.redisService = redisService;
         this.modelMapper = modelMapper;
+        this.weatherService = weatherService;
     }
 
     @Cacheable("routes")
@@ -110,6 +112,7 @@ public class BusService {
                     if (!recentCaches.isEmpty()) {
                         continue;
                     }
+                    WeatherRealtimeDTO weatherRealtimeDTO = weatherService.getRealtime(dto.getStopLat(), dto.getStopLon());
                     HistoricalArrival historicalArrival = new HistoricalArrival(
                             routeID,
                             dto.getStopCode(),
@@ -125,7 +128,10 @@ public class BusService {
                             vehicle.getVehicleCapacityIndicator(),
                             distance,
                             TimeUtils.getCurrentTime(0),
-                            dayOfWeek
+                            dayOfWeek,
+                            weatherRealtimeDTO.getData().getValues().getRainIntensity(),
+                            weatherRealtimeDTO.getData().getValues().getSnowIntensity(),
+                            weatherRealtimeDTO.getData().getValues().getTemperature()
                     );
                     redisService.addToZsetByTimestamp(cacheKey);
                     historicalArrivals.add(historicalArrival);
