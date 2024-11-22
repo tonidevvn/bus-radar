@@ -1,53 +1,66 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  mysql:
-    image: mysql:8
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: gtfs_db
-      MYSQL_USER: user
-      MYSQL_PASSWORD: user_password
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./scripts:/docker-entrypoint-initdb.d # Mount a volume for initialization scripts
-      - ./gtfs_import:/var/lib/mysql-files
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 15s
-      timeout: 10s
-      retries: 5
+    mysql:
+        image: mysql:8
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: root_password
+            MYSQL_DATABASE: gtfs_db
+            MYSQL_USER: user
+            MYSQL_PASSWORD: user_password
+        ports:
+            - '3306:3306'
+        volumes:
+            - mysql_data:/var/lib/mysql
+            - ./scripts:/docker-entrypoint-initdb.d # Mount a volume for initialization scripts
+            - ./gtfs_import:/var/lib/mysql-files
+        healthcheck:
+            test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+            interval: 15s
+            timeout: 10s
+            retries: 5
 
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    restart: always
-    environment:
-      - WEATHER_API_KEY=${WEATHER_API_KEY}
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/gtfs_db?createDatabaseIfNotExist=true
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=user_password
-    ports:
-      - "8080:8080"
-    depends_on:
-      mysql:
-        condition: service_healthy
+    redis:
+        image: redis/redis-stack:latest
+        container_name: redis-stack
+        ports:
+            - '6379:6379'
+            - '8001:8001'
+        restart: unless-stopped
+        volumes:
+            - redis_data:/data
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    restart: on-failure
-    environment:
-      - VITE_API_URL=http://localhost:8080
-    ports:
-      - "5173:5173"
-    depends_on:
-      - backend
+    # backend:
+    #   build:
+    #     context: ./backend
+    #     dockerfile: Dockerfile
+    #   restart: always
+    #   environment:
+    #     - WEATHER_API_KEY=${WEATHER_API_KEY}
+    #     - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/gtfs_db?createDatabaseIfNotExist=true
+    #     - SPRING_DATASOURCE_USERNAME=user
+    #     - SPRING_DATASOURCE_PASSWORD=user_password
+    #   ports:
+    #     - "8080:8080"
+    #   depends_on:
+    #     mysql:
+    #       condition: service_healthy
+
+    # frontend:
+    #   build:
+    #     context: ./frontend
+    #     dockerfile: Dockerfile
+    #   restart: on-failure
+    #   environment:
+    #     - VITE_API_URL=http://localhost:8080
+    #   ports:
+    #     - "5173:5173"
+    #   depends_on:
+    #     - backend
 
 volumes:
-  mysql_data:
+    mysql_data:
+    redis_data:
