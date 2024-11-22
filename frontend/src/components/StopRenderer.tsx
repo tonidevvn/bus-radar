@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Marker, Popup } from 'react-leaflet'
 import { useDispatch, useSelector } from 'react-redux'
 import { GET_STOPS } from '../api/bus_api'
+import { setLoading } from '../store/slices/appSlice'
 import { setPickStop } from '../store/slices/busSlice'
 import { AppDispatch } from '../store/store'
 import { Stop } from '../types/type'
@@ -29,15 +30,18 @@ const StopsRenderer = () => {
         (state: RootState) => state.bus
     )
     const dispatch = useDispatch<AppDispatch>()
-
     useEffect(() => {
         if (!patternIDs) {
             return
         }
-        GET_STOPS(patternIDs).then((data) => {
-            setStops(data)
-        })
-    }, [patternIDs])
+        GET_STOPS(patternIDs)
+            .then((data) => {
+                setStops(data)
+            })
+            .finally(() => {
+                dispatch(setLoading(false))
+            })
+    }, [patternIDs, dispatch])
 
     return (
         <>

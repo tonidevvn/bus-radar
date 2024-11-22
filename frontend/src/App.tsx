@@ -1,10 +1,13 @@
+import { RootState } from '@reduxjs/toolkit/query'
 import { Layout } from 'antd'
 import 'antd/dist/reset.css'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useState } from 'react'
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import { useSelector } from 'react-redux'
 import { GET_ROUTES } from './api/bus_api'
+import LoadingWrapper from './components/LoadingWrapper'
 import LeftMenu from './components/Menu'
 import RouteBuilderRenderer from './components/RouterBuilderRenderer'
 import StopsRenderer from './components/StopRenderer'
@@ -27,6 +30,7 @@ function App() {
     const [currentLocation, setCurrentLocation] = useState<
         [number, number] | null
     >(null)
+    const { loading } = useSelector((state: RootState) => state.app)
 
     useEffect(() => {
         GET_ROUTES().then((data) => {
@@ -78,10 +82,12 @@ function App() {
                             </Marker>
                         )}
 
-                        <StopsRenderer />
-                        <VehicleRenderer />
-                        <RouteBuilderRenderer />
-                        <StopSchedule />
+                        <LoadingWrapper loading={loading}>
+                            <StopsRenderer />
+                            <VehicleRenderer />
+                            <RouteBuilderRenderer />
+                            <StopSchedule />
+                        </LoadingWrapper>
 
                         <Weather currentLocation={currentLocation} />
                     </MapContainer>

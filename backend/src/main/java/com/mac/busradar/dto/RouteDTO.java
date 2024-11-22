@@ -3,9 +3,12 @@ package com.mac.busradar.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Data
 @AllArgsConstructor
-public class RouteDTO {
+public class RouteDTO implements Serializable {
     private int routeID;
     private int routeNumber;
     private String routeCode;

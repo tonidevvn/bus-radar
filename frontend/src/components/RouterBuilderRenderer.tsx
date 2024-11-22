@@ -7,7 +7,6 @@ import { RouteBuilder } from '../types/type'
 const RouteBuilderRenderer = () => {
     const patternIDs = useSelector((state: RootState) => state.bus.patternIDs)
     const [routesBuilder, setRoutesBuilder] = useState<RouteBuilder[]>([])
-
     useEffect(() => {
         if (!patternIDs) {
             return

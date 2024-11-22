@@ -1,5 +1,6 @@
 package com.mac.busradar.service;
 
+import com.mac.busradar.cache.RedisService;
 import com.mac.busradar.dto.*;
 import com.mac.busradar.model.HistoricalArrival;
 import com.mac.busradar.model.Vehicle;
@@ -13,14 +14,15 @@ import com.mac.busradar.util.TimeUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class BusService {
@@ -29,15 +31,17 @@ public class BusService {
     private final HistoricalArrivalRepository historicalArrivalRepository;
     private final StopTimesRepository stopTimesRepository;
     private final TripRepository tripRepository;
+    private final RedisService redisService;
     private final ModelMapper modelMapper;
-    private double minDistance = 10;
+    private double minDistance = 5L;
 
-    public BusService(WebClient.Builder webClientBuilder, StopRepository stopRepository, VehicleRepository vehicleRepository, HistoricalArrivalRepository historicalArrivalRepository, StopTimesRepository stopTimesRepository, TripRepository tripRepository, ModelMapper modelMapper) {
+    public BusService(WebClient.Builder webClientBuilder, StopRepository stopRepository, VehicleRepository vehicleRepository, HistoricalArrivalRepository historicalArrivalRepository, StopTimesRepository stopTimesRepository, TripRepository tripRepository, RedisService redisService, ModelMapper modelMapper) {
         this.webClient = webClientBuilder.baseUrl("https://windsor.mytransitride.com").build();
         this.vehicleRepository = vehicleRepository;
         this.historicalArrivalRepository = historicalArrivalRepository;
         this.stopTimesRepository = stopTimesRepository;
         this.tripRepository = tripRepository;
+        this.redisService = redisService;
         this.modelMapper = modelMapper;
     }
 
@@ -79,7 +83,7 @@ public class BusService {
         return stopTimesRepository.findScheduleForDay(Long.parseLong(stopId), Long.parseLong(routeId), dayOfWeek);
     }
 
-    public Mono<List<VehicleStatusDTO>> getVehicleStatus(String patternIds) {
+    public Mono<List<VehicleStatusDTO>> getVehicleStatus(String patternIds, Long routeID, String dayOfWeek) {
         Mono<List<VehicleStatusDTO>> vehicleData = webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/api/VehicleStatuses")
@@ -93,8 +97,6 @@ public class BusService {
         // When vehicle reaches nearest bus stop, record the time
         String startTime = TimeUtils.getCurrentTime(-5);
         String endTime = TimeUtils.getCurrentTime(5);
-        Long routeID = 18L;
-        String dayOfWeek = "saturday";
         List<HistoricalArrivalDTO> dtos = stopTimesRepository.findSchedule(routeID, startTime, endTime, dayOfWeek);
 
         // Calculate haversine distance
@@ -103,6 +105,11 @@ public class BusService {
             for (Vehicle vehicle : vehicles) {
                 double distance = MathUtils.haversine(vehicle.lat, vehicle.lng, dto.getStopLat(), dto.getStopLon());
                 if (distance < minDistance) {
+                    String cacheKey = String.format("%s_%s", vehicle.getName(), dto.getStopCode());
+                    Set<String> recentCaches = redisService.getElementsByRange(cacheKey, System.currentTimeMillis() - 5 * 60 * 1000, System.currentTimeMillis());
+                    if (!recentCaches.isEmpty()) {
+                        continue;
+                    }
                     HistoricalArrival historicalArrival = new HistoricalArrival(
                             routeID,
                             dto.getStopCode(),
@@ -120,6 +127,7 @@ public class BusService {
                             TimeUtils.getCurrentTime(0),
                             dayOfWeek
                     );
+                    redisService.addToZsetByTimestamp(cacheKey);
                     historicalArrivals.add(historicalArrival);
                     break;
                 }

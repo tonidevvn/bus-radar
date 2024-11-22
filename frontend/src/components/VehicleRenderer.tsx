@@ -4,6 +4,7 @@ import { Marker, Popup } from 'react-leaflet'
 import { useSelector } from 'react-redux'
 import { GET_VEHICLE_STATUS } from '../api/bus_api'
 import { VehicleStatus } from '../types/type'
+import { getCurrentDayOfWeek } from '../utils/Date'
 import VehicleStatusInfo from './VehicleStatusInfo'
 
 const BusIcon = L.icon({
@@ -15,16 +16,17 @@ const BusIcon = L.icon({
 
 const VehicleRenderer = () => {
     const [vehicles, setVehicles] = useState<VehicleStatus[]>([])
-    const patternIDs = useSelector((state: RootState) => state.bus.patternIDs)
-
+    const { routeID, patternIDs } = useSelector((state: RootState) => state.bus)
     useEffect(() => {
         const fetchData = () => {
             if (!patternIDs) {
                 return
             }
-            GET_VEHICLE_STATUS(patternIDs).then((data) => {
-                setVehicles(data)
-            })
+            GET_VEHICLE_STATUS(patternIDs, routeID, getCurrentDayOfWeek()).then(
+                (data) => {
+                    setVehicles(data)
+                }
+            )
         }
 
         const interval = setInterval(fetchData, 3000)

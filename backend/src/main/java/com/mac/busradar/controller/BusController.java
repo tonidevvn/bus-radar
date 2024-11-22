@@ -44,8 +44,10 @@ public class BusController {
     }
 
     @GetMapping("vehicleStatus")
-    public Mono<ResponseEntity<List<VehicleStatusDTO>>> getVehicleStatus(@RequestParam String patternIds) {
-        return busService.getVehicleStatus(patternIds)
+    public Mono<ResponseEntity<List<VehicleStatusDTO>>> getVehicleStatus(@RequestParam String patternIds,
+                                                                         @RequestParam Long routeID,
+                                                                         @RequestParam String dayOfWeek) {
+        return busService.getVehicleStatus(patternIds, routeID, dayOfWeek)
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

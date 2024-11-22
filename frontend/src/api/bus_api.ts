@@ -58,9 +58,9 @@ const GET_STOP_TIMES = async (routeID: number, stopID: number, dayOfWeek: string
   }
 }
 
-const GET_VEHICLE_STATUS = async (patternIds: string): Promise<VehicleStatus[]> => {
+const GET_VEHICLE_STATUS = async (patternIds: string, routeID: number, dayOfWeek: string): Promise<VehicleStatus[]> => {
   try {
-    const response: AxiosResponse<VehicleStatus[]> = await instance.get("/api/vehicleStatus", { params: { patternIds: patternIds } });
+    const response: AxiosResponse<VehicleStatus[]> = await instance.get("/api/vehicleStatus", { params: { patternIds: patternIds, routeID, dayOfWeek } });
     return response.data
   } catch (error) {
     console.error("Error fetching vehicle status: ", error);

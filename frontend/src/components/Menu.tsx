@@ -1,6 +1,7 @@
 import { Input, Layout, Menu, Space, Typography } from 'antd'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { setLoading } from '../store/slices/appSlice'
 import { setPatternIDs, setRouteID } from '../store/slices/busSlice'
 import { AppDispatch } from '../store/store'
 import { Route } from '../types/type'
@@ -47,6 +48,7 @@ const LeftMenu = ({ routes }: { routes: { [key: string]: Route[] } }) => {
                 onSelect={({ key }) => {
                     const route = routes[key]
                     const patternIDs = route.map((r) => r.patternID).join(',')
+                    dispatch(setLoading(true))
                     dispatch(setRouteID(route[0].routeNumber))
                     dispatch(setPatternIDs(patternIDs))
                 }}
