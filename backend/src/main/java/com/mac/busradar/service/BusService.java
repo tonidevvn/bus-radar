@@ -112,7 +112,7 @@ public class BusService {
                     if (!recentCaches.isEmpty()) {
                         continue;
                     }
-                    WeatherRealtimeDTO weatherRealtimeDTO = weatherService.getRealtime(dto.getStopLat(), dto.getStopLon());
+                    WeatherRealtimeDTO weatherRealtimeDTO = weatherService.getRealtime(42.3149, 83.0364);
                     HistoricalArrival historicalArrival = new HistoricalArrival(
                             routeID,
                             dto.getStopCode(),
