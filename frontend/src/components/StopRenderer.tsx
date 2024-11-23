@@ -3,12 +3,15 @@ import L from 'leaflet'
 import { useEffect, useState } from 'react'
 import { Marker, Popup } from 'react-leaflet'
 import { useDispatch, useSelector } from 'react-redux'
-import { GET_STOPS } from '../api/bus_api'
+import { GET_DELAY_AT_STOP, GET_STOPS } from '../api/bus_api'
 import { setLoading } from '../store/slices/appSlice'
-import { setPickStop } from '../store/slices/busSlice'
+import { setAvailableStops, setPickStop } from '../store/slices/busSlice'
 import { AppDispatch } from '../store/store'
-import { Stop } from '../types/type'
+import { Stop, StopDelay } from '../types/type'
 import StopSchedule from './StopSchedule'
+import { Typography } from 'antd'
+
+const { Text } = Typography
 
 const DefaultIcon = L.icon({
     iconUrl: '/circle.png',
@@ -26,22 +29,26 @@ const HighlightIcon = L.icon({
 
 const StopsRenderer = () => {
     const [stops, setStops] = useState<Stop[]>([])
-    const { patternIDs, pickStop } = useSelector(
+    const { patternIDs, pickStop, routeID, stopDelays } = useSelector(
         (state: RootState) => state.bus
     )
     const dispatch = useDispatch<AppDispatch>()
+
     useEffect(() => {
         if (!patternIDs) {
             return
         }
+        dispatch(setLoading(true))
+
         GET_STOPS(patternIDs)
             .then((data) => {
                 setStops(data)
+                dispatch(setAvailableStops(data))
             })
             .finally(() => {
                 dispatch(setLoading(false))
             })
-    }, [patternIDs, dispatch])
+    }, [patternIDs, dispatch, routeID, pickStop?.stopNumber])
 
     return (
         <>
@@ -61,7 +68,14 @@ const StopsRenderer = () => {
                     }}
                 >
                     <Popup>
-                        {/* <StopInfo stop={stop} /> */}
+                        <Text strong>Estimated Delay: </Text>
+                        <Text type='danger'>
+                            {stopDelays.filter(
+                                (s: StopDelay) =>
+                                    s.stopId == pickStop?.stopNumber
+                            )[0]?.averageDelay || 0}{' '}
+                            minutes
+                        </Text>
                         <StopSchedule />
                     </Popup>
                 </Marker>

@@ -5,6 +5,7 @@ import com.mac.busradar.dto.*;
 import com.mac.busradar.model.HistoricalArrival;
 import com.mac.busradar.model.Vehicle;
 import com.mac.busradar.mongo_repository.HistoricalArrivalRepository;
+import com.mac.busradar.repository.HistoricalDataRepository;
 import com.mac.busradar.repository.StopRepository;
 import com.mac.busradar.repository.StopTimesRepository;
 import com.mac.busradar.repository.TripRepository;
@@ -19,32 +20,28 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class BusService {
     public final WebClient webClient;
-    private final VehicleRepository vehicleRepository;
     private final HistoricalArrivalRepository historicalArrivalRepository;
     private final StopTimesRepository stopTimesRepository;
-    private final TripRepository tripRepository;
     private WeatherService weatherService;
+    private final HistoricalDataRepository historicalDataRepository;
     private final RedisService redisService;
     private final ModelMapper modelMapper;
     private double minDistance = 10L;
 
-    public BusService(WebClient.Builder webClientBuilder, StopRepository stopRepository, VehicleRepository vehicleRepository, HistoricalArrivalRepository historicalArrivalRepository, StopTimesRepository stopTimesRepository, TripRepository tripRepository, RedisService redisService, ModelMapper modelMapper, WeatherService weatherService) {
+    public BusService(WebClient.Builder webClientBuilder, HistoricalArrivalRepository historicalArrivalRepository, StopTimesRepository stopTimesRepository, RedisService redisService, ModelMapper modelMapper, WeatherService weatherService, HistoricalDataRepository historicalDataRepository) {
         this.webClient = webClientBuilder.baseUrl("https://windsor.mytransitride.com").build();
-        this.vehicleRepository = vehicleRepository;
         this.historicalArrivalRepository = historicalArrivalRepository;
         this.stopTimesRepository = stopTimesRepository;
-        this.tripRepository = tripRepository;
         this.redisService = redisService;
         this.modelMapper = modelMapper;
         this.weatherService = weatherService;
+        this.historicalDataRepository = historicalDataRepository;
     }
 
     @Cacheable("routes")
@@ -153,5 +150,22 @@ public class BusService {
                         .build())
                 .retrieve()
                 .bodyToMono(StopScheduleDTO.class);
+    }
+
+    public List<StopDelayDTO> getDelayAtStop(String st) {
+        List<String> stopNumbers = Arrays.stream(st.split(",")).toList();
+        List<Object[]> results = historicalDataRepository.findAverageDelayByStopNumbers(stopNumbers);
+        List<StopDelayDTO> dtoList = new ArrayList<>();
+
+        for (Object[] result : results) {
+            String stopId = (String) result[0];
+            BigDecimal averageDelayBigDecimal = (BigDecimal) result[1];
+
+            // Convert BigDecimal to Double
+            Double averageDelay = averageDelayBigDecimal != null ? averageDelayBigDecimal.doubleValue() : null;
+            dtoList.add(new StopDelayDTO(stopId, averageDelay));
+        }
+
+        return dtoList;
     }
 }

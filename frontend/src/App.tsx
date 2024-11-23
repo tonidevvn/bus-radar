@@ -15,6 +15,7 @@ import StopSchedule from './components/StopSchedule'
 import VehicleRenderer from './components/VehicleRenderer'
 import Weather from './components/Weather'
 import { Route } from './types/type'
+import BadStops from './components/BadStops'
 
 const { Content } = Layout
 
@@ -83,6 +84,7 @@ function App() {
                         )}
 
                         <LoadingWrapper loading={loading}>
+                            <BadStops />
                             <StopsRenderer />
                             <VehicleRenderer />
                             <RouteBuilderRenderer />

@@ -151,3 +151,28 @@ INTO TABLE shapes
 FIELDS TERMINATED BY ','
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES;
+
+-- route_id,stop_id,stop_lat,stop_lon,arrival_time,bus_arrival_time,bus_lat,bus_lon,distance_to_stop,day,rain_intensity,snow_intensity,temperature,wind_speed,_class,_id
+CREATE TABLE historical_data (
+    route_id VARCHAR(255),
+    stop_id VARCHAR(255),
+    stop_lat DOUBLE,
+    stop_lon DOUBLE,
+    arrival_time VARCHAR(8),
+    bus_arrival_time VARCHAR(8),
+    bus_lat DOUBLE,
+    bus_lon DOUBLE,
+    distance_to_stop DOUBLE,
+    day VARCHAR(255),
+    rain_intensity DOUBLE,
+    snow_intensity DOUBLE,
+    temperature DOUBLE,
+    wind_speed DOUBLE,
+    _class VARCHAR(255),
+    _id VARCHAR(255),
+    PRIMARY KEY (_id)
+);
+
+# Load CSV
+LOAD DATA INFILE '/var/lib/mysql-files/historical_data.csv' INTO
+TABLE historical_data FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' IGNORE 1 LINES;

@@ -75,6 +75,11 @@ type StopScheduleData = {
   departureTime: string
 }
 
+type StopDelay = {
+  stopId: string;
+  averageDelay: number;
+}
+
 type GroupByPattern = {
   directId: number;
   directName: string | null;
@@ -133,5 +138,5 @@ type WeatherValue = {
 }
 
 
-export type { Route, RouteBuilder, Stop, StopSchedule, StopScheduleData, Timeline, VehicleStatus }
+export type { Route, RouteBuilder, Stop, StopSchedule, StopScheduleData, Timeline, VehicleStatus, StopDelay }
 
