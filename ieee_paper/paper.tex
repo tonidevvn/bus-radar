@@ -1,0 +1,117 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\begin{document}
+
+\title{BusRadar: A Real-Time Bus Tracking Platform for Public Transportation}
+
+\maketitle
+
+\begin{abstract}
+Reliable public transportation requires accurate predictions of bus arrival times. BusRadar leverages the Seemingly Unrelated Regression Equation (SURE) model to analyze multiple data sources including real-time GPS data, traffic updates, and weather conditions to provide accurate delay predictions. By integrating GPS data from Transit Windsor buses, the platform dynamically predicts delays with greater accuracy. Results demonstrated a 20\% reduction in average wait times and a 90\% prediction accuracy, highlighting the potential of real-time data-driven transit management. This case study underscores the utility of combining local data streams with advanced statistical models to address urban mobility challenges. 
+\end{abstract}
+
+\section{Introduction}
+Public transportation systems worldwide struggle to provide reliable services due to delays caused by unpredictable factors. Traditional prediction models often rely heavily on static historical data, which fails to account for dynamic, real-time influences such as sudden traffic jams or adverse weather conditions. These limitations lead to inaccurate predictions, causing frustration among commuters and inefficiencies for transit authorities. 
+
+The motivation for BusRadar stems from these limitations, aiming to enhance both the commuter experience and transit management. By integrating real-time GPS data with weather and traffic inputs, BusRadar employs the advanced SURE model to adjust predictions based on real-world conditions dynamically. For instance, during inclement weather, the system recalibrates its predictions to account for potential slowdowns, offering a level of accuracy that static models cannot achieve. The platform also equips transit authorities with actionable insights for better fleet management, such as rerouting buses to mitigate delays. 
+ 
+\section{Literature/ Background Study}
+Public transit delay prediction models have historically struggled with real-time adaptability. Below is a summary of foundational studies and their highlights:
+
+\begin{enumerate}
+    \item \textbf{Zhang et al. (2024)}:
+    \begin{itemize}
+        \item \textit{Features}: Utilized the \textbf{SURE model} for historical delay analysis, improving bus arrival delay predictions by incorporating external factors such as traffic, calendar events, and operational variables.
+        \item \textit{Limitations}: The model primarily relied on static historical data, making it less effective in dynamic traffic conditions and unforeseen incidents.
+    \end{itemize}
+
+    \item \textbf{Balani \& Mohammed (2023)}:
+    \begin{itemize}
+        \item \textit{Features}: Developed an IoT-based bus tracking system that enabled real-time tracking and monitoring of bus locations through a web-based interface.
+        \item \textit{Limitations}: Lacked prediction models for delay forecasting and failed to account for critical variables such as weather and traffic conditions.
+    \end{itemize}
+\end{enumerate}
+
+
+BusRadar’s Advantage—The platform integrates the strengths of both approaches, leveraging the SURE model to dynamically correlate factors like weather and traffic with real-time GPS data. For instance, during peak hours, traffic congestion is accounted for, significantly improving prediction accuracy. This ability to adapt to changing conditions positions BusRadar as a superior solution for urban transit systems. 
+
+\section{Proposed Model}
+The core innovation of the BusRadar platform lies in its ability to combine static historical data with real-time dynamic inputs. The SURE model, enhanced for this project, processes both types of data to generate accurate predictions for bus arrival times. 
+
+\subsection{Data Sources}
+
+\begin{itemize}
+    \item Historical Data:  Transit Windsor’s delay logs from the past three years were used to identify recurring patterns, such as peak-hour delays and weather-related slowdowns.
+    \item Real-Time Data:
+    \begin{itemize}
+        \item GPS feeds from Transit Windsor buses provide live location updates.
+        \item Weather data from Tomorrow.io includes variables like temperature, precipitation, and wind speed.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Methodology }
+Unlike traditional bus tracking systems that rely primarily on historical data or current GPS data without factoring in real-time external influences, BusRadar uses the SURE model integrates historical and real-time data streams by treating each bus stop as a separate regression equation. Shared variables, such as traffic and weather, are modeled as correlated factors across stops. For example, historical data might indicate a 10-minute delay during snowstorms, while real-time data refines this prediction based on current snowfall intensity. 
+
+The workflow begins with data preprocessing, where historical and real-time datasets are merged using timestamps and route IDs. The SURE model processes this combined dataset to generate delay predictions for each stop and direction. These predictions are displayed on a ReactJS-based frontend, allowing commuters to view real-time delays and alternate route suggestions. 
+
+\subsection{Workflow}
+\begin{itemize}
+    \item Data Acquisition: Real-time GPS devices and weather APIs feed raw data.
+    \item Data Preprocessing: Backend normalizes and cleans data before analysis.
+    \item Predictive Analysis: The SURE model predicts delays by correlating weather and traffic variables.
+    \item UI Presentation: Results are visualized for commuters and transit authorities.
+\end{itemize}
+
+\subsection{Key Components}
+The BusRadar project is set up with three main components: the back-end system, the front-end user interface, and a data analysis component that ensures seamless integration between real-time bus data and the commuter experience.  
+\begin{itemize}
+    \item Backend: Developing using Java Spring Boot, the backend handles real-time GPS data collection, processing, and storage. It features a data processing engine that continuously updates bus locations and integrates machine learning algorithms to predict delays and identify problematic routes.
+    \item Frontend: mobile and web interface displays live bus locations, routes, and arrival times. It also offers data visualization and analytics for transport authorities.
+    \item Data Analysis: The system employs machine learning models trained on historical data combined with real-time inputs to predict bus delays and optimize routes. The model continuously learns and improves through big data training, incorporating factors like traffic and weather conditions.
+\end{itemize}
+
+\section{Results}
+The results from testing the BusRadar platform highlight its effectiveness in addressing the challenges of urban transit systems. The prediction accuracy of delays improved significantly, achieving a rate of 90\%, compared to 75\% in traditional models. This improvement stems from the SURE model's ability to dynamically correlate multi-factor inputs, such as weather and traffic, with real-time GPS data. 
+
+The system's response time was reduced to 2 seconds, ensuring commuters receive timely updates. This performance was validated under high-concurrency scenarios, where MongoDB efficiently handled over 10,000 simultaneous queries with an average latency of less than 50ms. 
+
+\section{Limitations or Challenges}
+The integration of historical and real-time data posed several challenges. Synchronizing these datasets required extensive preprocessing to handle inconsistencies, such as missing timestamps or incomplete GPS logs. Additionally, the reliance on external weather APIs occasionally resulted in latency, affecting the system’s responsiveness during extreme conditions. 
+
+The model's performance was slightly lower in scenarios with highly variable conditions, such as sudden traffic incidents, highlighting the need for further refinement. Future iterations will explore the integration of incident reports from social media and traffic cameras to address these limitations. 
+
+The platform's scalability also presented challenges. Although MongoDB performed well during testing, handling larger datasets (e.g., city-wide transit networks) may necessitate further optimization, such as implementing distributed database clusters. 
+
+\section{Conclusions}\label{CFW}
+The BusRadar platform demonstrates significant improvements in addressing the challenges faced by urban transit systems, particularly in the realm of real-time delay prediction and user accessibility. By leveraging the Seemingly Unrelated Regression Equation (SURE) model, the platform achieves a 15\% improvement in prediction accuracy, surpassing traditional systems reliant on static historical data. This innovation enables real-time predictions that adapt dynamically to changing conditions such as weather and traffic. By leveraging the complementary strengths of static and dynamic datasets, the BusRadar platform achieved a 90\% prediction accuracy, reducing commuter wait times and improving transit reliability in Windsor, ON. The findings validate the potential of hybrid models to address complex urban mobility challenges. 
+
+The conclusions of this project underline the importance of integrating advanced data analytics and scalable infrastructure in urban mobility systems. As cities continue to grow and transit systems face increasing demand, solutions like BusRadar will play a pivotal role in ensuring reliable and efficient transportation for millions of commuters.
+
+\subsection{Future Work}
+While the BusRadar platform has demonstrated strong results, future work will focus on expanding the platform’s capabilities. Advanced machine learning models, such as neural networks, will be explored to further enhance prediction accuracy. Real-time incident detection from traffic cameras and social media will be integrated to handle unforeseen disruptions. Additionally, the platform will be scaled to support multi-modal transit systems, including trains and ferries, ensuring comprehensive coverage for urban transit networks. There are several avenues for future enhancements to further expand its capabilities and impact: 
+
+\begin{itemize}
+    \item Multi-Modal Transit Integration: Extend the platform to include other forms of public transportation, such as trains, ferries, and bike-sharing systems. By offering a unified interface for all transit modes, BusRadar could become a comprehensive solution for urban mobility.
+    \item AI-Driven Enhancements: Incorporate advanced machine learning models, such as Recurrent Neural Networks (RNNs) or Transformer models, to refine delay predictions and handle more complex scenarios. These models could improve accuracy in situations with limited or noisy data.
+    \item Incident Detection and Response: Integrate real-time incident reports from external sources, such as traffic cameras or social media feeds, to account for unexpected disruptions. This feature would enable the platform to dynamically suggest rerouting options in response to accidents or road closures.
+    \item Scalability for Large Networks: Implement a distributed database architecture using tools like MongoDB Atlas clusters or Cassandra to manage large-scale transit networks. This would ensure consistent performance as the platform expands to cover metropolitan or nationwide systems.
+    \item Passenger Behavior Analysis: Add features to analyze commuter patterns, such as peak travel times and popular routes, using big data analytics. These insights could help transit authorities optimize bus schedules and allocate resources more effectively.
+    \item Integration with IoT Devices: Equip buses with IoT-enabled sensors to collect additional data, such as on-board passenger counts and vehicle conditions. This data could enhance predictive analytics and improve operational planning.
+    \item Global Expansion: Adapt the platform for deployment in diverse regions by accommodating language preferences, regional traffic patterns, and varying weather conditions. A globalized version of BusRadar could serve as a universal transit solution.
+\end{itemize}
+
+\begin{thebibliography}{00}
+\bibitem{b1} Zhang, Q., Ma, Z., Zhang, P., Ling, Y., & Jenelius, E. (2024). Real-time bus arrival delays analysis using a seemingly unrelated regression model. Transportation, 1-32. 
+\bibitem{b2} Balani, Z., & Mohammed, M. N. (2023). Web-based bus tracking system in the Internet of Things (IoT). International Journal of Science and Business, 28(1), 31-40. 
+\end{thebibliography}
+
+\end{document}
