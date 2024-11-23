@@ -1,87 +1,87 @@
-import { RootState } from "@reduxjs/toolkit/query";
-import L from "leaflet";
-import { useEffect, useState } from "react";
-import { Marker, Popup, useMap } from "react-leaflet";
-import { useDispatch, useSelector } from "react-redux";
-import { GET_STOPS } from "../api/bus_api";
-import { setLoading } from "../store/slices/appSlice";
-import { setPickStop } from "../store/slices/busSlice";
-import { AppDispatch } from "../store/store";
-import { Stop } from "../types/type";
-import StopSchedule from "./StopSchedule";
+import { RootState } from '@reduxjs/toolkit/query'
+import L from 'leaflet'
+import { useEffect, useState } from 'react'
+import { Marker, Popup } from 'react-leaflet'
+import { useDispatch, useSelector } from 'react-redux'
+import { GET_DELAY_AT_STOP, GET_STOPS } from '../api/bus_api'
+import { setLoading } from '../store/slices/appSlice'
+import { setAvailableStops, setPickStop } from '../store/slices/busSlice'
+import { AppDispatch } from '../store/store'
+import { Stop, StopDelay } from '../types/type'
+import StopSchedule from './StopSchedule'
+import { Typography } from 'antd'
 
-const StopIcon = (size: number, iconUrl: string) =>
-  L.icon({
-    iconUrl,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-    popupAnchor: [0, -size / 2],
-  });
+const { Text } = Typography
+
+const DefaultIcon = L.icon({
+    iconUrl: '/circle.png',
+    iconSize: [20, 20], // Size of the circle including the border (20px + 2px border on each side)
+    iconAnchor: [12, 12], // Anchor to align the circle properly on the map
+    popupAnchor: [0, -12], // Adjust popup location relative to the icon
+})
+
+const HighlightIcon = L.icon({
+    iconUrl: '/highlight_circle.png', // Replace with an image to indicate the highlighted stop
+    iconSize: [25, 25], // Slightly larger size for emphasis
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -12],
+})
 
 const StopsRenderer = () => {
-  const [stops, setStops] = useState<Stop[]>([]);
-  const { patternIDs, pickStop } = useSelector((state: RootState) => state.bus);
-  const [iconSize, setIconSize] = useState(20); // Default size for stops
-  const defaultZoom = 13;
-  const [zoom, setZoom] = useState(defaultZoom); // Default zoom level
-  const map = useMap();
+    const [stops, setStops] = useState<Stop[]>([])
+    const { patternIDs, pickStop, routeID, stopDelays } = useSelector(
+        (state: RootState) => state.bus
+    )
+    const dispatch = useDispatch<AppDispatch>()
 
-  const dispatch = useDispatch<AppDispatch>();
-  useEffect(() => {
-    if (!patternIDs) {
-      return;
-    }
-    GET_STOPS(patternIDs)
-      .then((data) => {
-        setStops(data);
-      })
-      .finally(() => {
-        dispatch(setLoading(false));
-      });
-  }, [patternIDs, dispatch]);
+    useEffect(() => {
+        if (!patternIDs) {
+            return
+        }
+        dispatch(setLoading(true))
 
-  useEffect(() => {
-    // Update icon size based on zoom level
-    const updateIconSize = () => {
-      const zoom = map.getZoom();
-      const size = zoom < defaultZoom ? 8 : Math.max(8, zoom * 1.15); // Reduce the size when zooming out, capped at 8px minimum
-      setIconSize(size);
-      setZoom(zoom);
-    };
+        GET_STOPS(patternIDs)
+            .then((data) => {
+                setStops(data)
+                dispatch(setAvailableStops(data))
+            })
+            .finally(() => {
+                dispatch(setLoading(false))
+            })
+    }, [patternIDs, dispatch, routeID, pickStop?.stopNumber])
 
-    map.on("zoomend", updateIconSize); // Listen for zoom changes
-    updateIconSize(); // Set size initially
+    return (
+        <>
+            {stops.map((stop) => (
+                <Marker
+                    key={stop.stopID}
+                    position={[stop.latitude, stop.longitude]}
+                    icon={
+                        pickStop?.stopID === stop.stopID
+                            ? HighlightIcon
+                            : DefaultIcon
+                    }
+                    eventHandlers={{
+                        click: () => {
+                            dispatch(setPickStop(stop))
+                        },
+                    }}
+                >
+                    <Popup>
+                        <Text strong>Estimated Delay: </Text>
+                        <Text type='danger'>
+                            {stopDelays.filter(
+                                (s: StopDelay) =>
+                                    s.stopId == pickStop?.stopNumber
+                            )[0]?.averageDelay || 0}{' '}
+                            minutes
+                        </Text>
+                        <StopSchedule />
+                    </Popup>
+                </Marker>
+            ))}
+        </>
+    )
+}
 
-    return () => {
-      map.off("zoomend", updateIconSize); // Cleanup listener
-    };
-  }, [map]);
-
-  return (
-    <>
-      {stops.map((stop) => (
-        <Marker
-          key={`${stop.stopID}-${zoom}`} // Key includes zoom to force re-render
-          position={[stop.latitude, stop.longitude]}
-          icon={
-            pickStop?.stopID === stop.stopID
-              ? StopIcon(iconSize + 5, "/highlight_circle.png") // Highlight icon
-              : StopIcon(iconSize, "/circle.png") // Default icon
-          }
-          eventHandlers={{
-            click: () => {
-              dispatch(setPickStop(stop));
-            },
-          }}
-        >
-          <Popup>
-            {/* <StopInfo stop={stop} /> */}
-            <StopSchedule />
-          </Popup>
-        </Marker>
-      ))}
-    </>
-  );
-};
-
-export default StopsRenderer;
+export default StopsRenderer

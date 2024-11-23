@@ -43,7 +43,7 @@ const StopSchedule = () => {
             {stopSchedule.length === 0 ? (
                 <p className='text-gray-600'>No schedule available</p>
             ) : (
-                <div className='overflow-y-auto max-h-96 border border-gray-300 rounded-md shadow-sm'>
+                <div className='overflow-y-auto max-h-40 border border-gray-300 rounded-md shadow-sm'>
                     <table className='w-full border-collapse'>
                         <thead>
                             <tr>

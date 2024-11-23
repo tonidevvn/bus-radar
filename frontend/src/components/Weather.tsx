@@ -15,7 +15,6 @@ const Weather: React.FC<WeatherProps> = ({ currentLocation }) => {
     const status = useSelector((state: RootState) => state.weather.status)
     const [visible, setVisible] = useState(true)
 
-    console.log(weatherData)
 
     // Generate a unique key for the current request
     const key = useMemo(

@@ -58,4 +58,9 @@ public class BusController {
                 .map(ResponseEntity::ok)
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
+
+    @GetMapping("delayAtStop")
+    public ResponseEntity<List<StopDelayDTO>> getDelayAtStop(@RequestParam String stopNumbers) {
+        return ResponseEntity.ok(busService.getDelayAtStop(stopNumbers));
+    }
 }

@@ -82,12 +82,27 @@ const GET_PREDICTIONS = async (stopId: number): Promise<StopSchedule> => {
   }
 }
 
+const GET_DELAY_AT_STOP = async (stopNumbers: string) => {
+  try {
+    const response: AxiosResponse = await instance.get("/api/delayAtStop", {
+      params: {
+        stopNumbers
+      }
+    });
+    return response.data
+  } catch (error) {
+    console.error("Error fetching delay at stop: ", error);
+    throw error;
+  }
+}
+
 export {
   GET_PREDICTIONS,
   GET_ROUTES,
   GET_ROUTES_BUILDER,
   GET_STOP_TIMES,
   GET_STOPS,
-  GET_VEHICLE_STATUS
+  GET_VEHICLE_STATUS,
+  GET_DELAY_AT_STOP
 };
 
