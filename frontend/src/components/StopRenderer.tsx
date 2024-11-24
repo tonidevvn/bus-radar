@@ -10,6 +10,7 @@ import { AppDispatch } from '../store/store'
 import { Stop, StopDelay } from '../types/type'
 import StopSchedule from './StopSchedule'
 import { Typography } from 'antd'
+import StopInfo from './StopInfo'
 
 const { Text } = Typography
 
@@ -70,12 +71,15 @@ const StopsRenderer = () => {
                     <Popup>
                         <Text strong>Estimated Delay: </Text>
                         <Text type='danger'>
-                            {stopDelays.filter(
-                                (s: StopDelay) =>
-                                    s.stopId == pickStop?.stopNumber
-                            )[0]?.averageDelay || 0}{' '}
+                            {(
+                                stopDelays.filter(
+                                    (s: StopDelay) =>
+                                        s.stopId == pickStop?.stopNumber
+                                )[0]?.averageDelay / 60 || 0
+                            ).toFixed(2)}{' '}
                             minutes
                         </Text>
+                        <StopInfo stop={pickStop} />
                         <StopSchedule />
                     </Popup>
                 </Marker>

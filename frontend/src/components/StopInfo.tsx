@@ -33,15 +33,6 @@ const StopInfo = ({ stop }: { stop: Stop | null }) => {
                 >{`${stop.stopNumber} - ${stop.stopName}`}</span>
             }
         >
-            <div style={styles.infoContainer}>
-                <div style={styles.infoItem}>
-                    <span style={styles.label}>Stop Code:</span>
-                    <span style={styles.value}>{stop.stopCode}</span>
-                </div>
-            </div>
-            <p
-                style={styles.arrivalsTitle}
-            >{`${stop.stopNumber} - ${stop.stopName} Expected Arrivals`}</p>
             <ul style={styles.arrivalsList}>
                 {schedule.grpByPtrn.length > 0 &&
                     schedule.grpByPtrn[0].predictions.map(

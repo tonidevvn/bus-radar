@@ -44,8 +44,8 @@ function BadStops() {
                     )}
                 renderItem={(stop: StopDelay) => (
                     <List.Item key={stop.stopId}>
-                        <Text strong>{stop.stopId}</Text> - {stop.averageDelay}{' '}
-                        minutes
+                        <Text strong>{stop.stopId}</Text> -{' '}
+                        {(stop.averageDelay / 60).toFixed(2)} minutes
                     </List.Item>
                 )}
             />
