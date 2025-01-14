@@ -2,6 +2,11 @@
 
 A real-time bus tracking system powered by Java Spring Boot and ReactJS, offering precise arrival predictions and delay forecasts through GPS integration and advanced analytics.
 
+[![Build Status](https://github.com/yourusername/bus-radar/actions/workflows/main.yml/badge.svg)](https://github.com/yourusername/bus-radar/actions)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-latest-brightgreen.svg)](docs/)
+[![Code Coverage](https://img.shields.io/codecov/c/github/yourusername/bus-radar)](https://codecov.io/gh/yourusername/bus-radar)
+
 ## Overview
 
 - **Backend**: Java Spring Boot with MongoDB for scalable data management
@@ -113,3 +118,72 @@ npm run dev
 ### Access Points
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8080
+
+## API Documentation
+
+Our REST API is documented using OpenAPI/Swagger specifications:
+
+- **Development**: http://localhost:8080/swagger-ui.html
+- **Production**: https://api.busradar.com/swagger-ui.html
+
+Key endpoints:
+- `/api/v1/buses` - Real-time bus locations
+- `/api/v1/predictions` - Arrival predictions
+- `/api/v1/routes` - Route information
+
+## Testing
+
+```bash
+# Run backend tests
+cd backend
+mvn test
+
+# Run frontend tests
+cd frontend
+npm test
+```
+
+Code coverage reports are available in:
+- Backend: `backend/target/site/jacoco/index.html`
+- Frontend: `frontend/coverage/lcov-report/index.html`
+
+## Troubleshooting
+
+Common issues and solutions:
+
+1. **Database Connection Issues**
+   ```bash
+   docker-compose restart mongodb
+   ```
+
+2. **Redis Cache Problems**
+   ```bash
+   docker-compose restart redis
+   ```
+
+3. **Frontend Hot Reload Not Working**
+   ```bash
+   npm run clean:cache
+   npm run dev
+   ```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and development process.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Dr. Abdulrauf Gidado for project supervision
+- University of Windsor for academic support
+- OpenStreetMap for mapping data
+- Weather API providers for real-time weather data
