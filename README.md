@@ -2,7 +2,6 @@
 
 A real-time bus tracking system powered by Java Spring Boot and ReactJS, offering precise arrival predictions and delay forecasts through GPS integration and advanced analytics.
 
-[![Build Status](https://github.com/yourusername/bus-radar/actions/workflows/main.yml/badge.svg)](https://github.com/yourusername/bus-radar/actions)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-latest-brightgreen.svg)](docs/)
 [![Code Coverage](https://img.shields.io/codecov/c/github/yourusername/bus-radar)](https://codecov.io/gh/yourusername/bus-radar)
