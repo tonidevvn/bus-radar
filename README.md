@@ -46,8 +46,6 @@ graph TB
     BE[Backend Services] --> DB[(MongoDB)]
     BE[Backend Services] --> Cache[Redis Cache]
     BE[Backend Services] --> FE[Frontend App]
-    User[User] --> FE
-    Admin[Admin] --> FE
 ```
 
 ### Data Flow
