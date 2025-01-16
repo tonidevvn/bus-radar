@@ -31,7 +31,7 @@ A real-time bus tracking system powered by Java Spring Boot and ReactJS, offerin
 - SURE predictive model
 
 ### Frontend
-- ReactJS
+- ReactJS with Vite
 - Interactive mapping
 - Real-time updates
 - Responsive design
