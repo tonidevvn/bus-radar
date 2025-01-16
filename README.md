@@ -41,11 +41,11 @@ A real-time bus tracking system powered by Java Spring Boot and ReactJS, offerin
 ### System Components
 ```mermaid
 graph TB
-    Weather[Weather API] --> BE [Backend Services]
-    Traffic[Traffic API - GPS Data] --> BE
-    BE --> DB[(MongoDB)]
-    BE --> Cache[Redis Cache]
-    BE --> FE[Frontend App]
+    Weather[Weather API] --> BE[Backend Services]
+    Traffic[Traffic API - GPS Data] --> BE[Backend Services]
+    BE[Backend Services] --> DB[(MongoDB)]
+    BE[Backend Services] --> Cache[Redis Cache]
+    BE[Backend Services] --> FE[Frontend App]
     User[User] --> FE
     Admin[Admin] --> FE
 ```
